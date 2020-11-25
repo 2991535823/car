@@ -1,0 +1,17 @@
+<RCC>
+    <qresource prefix="/">
+        <file>main.qml</file>
+        <file>Tabwindows.qml</file>
+        <file>Flowrec.qml</file>
+        <file>SplashLayout.qml</file>
+        <file>MaprunLayout.qml</file>
+        <file>Selectbox.qml</file>
+        <file>MapcreateLayout.qml</file>
+        <file>Editarea.qml</file>
+        <file>SetDebugLayout.qml</file>
+    </qresource>
+    <qresource prefix="/img">
+        <file>tab.png</file>
+        <file>xndx.jpg</file>
+    </qresource>
+</RCC>
