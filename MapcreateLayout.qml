@@ -132,7 +132,7 @@ Rectangle{
                             width: parent.width*0.6
                             height: parent.height
                             prompttext:"地图选择:"
-
+                            promptmodel: file.maplist
                         }
 
                         Button {

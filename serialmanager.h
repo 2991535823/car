@@ -12,6 +12,7 @@ class SerialManager : public QObject
     Q_OBJECT
     Q_ENUMS(Cmd)
 public:
+
     explicit SerialManager(QObject *parent = nullptr);
     ~SerialManager();
     enum Cmd{
@@ -54,4 +55,5 @@ private slots:
 protected:
     virtual void timerEvent(QTimerEvent *event) override;
 };
+
 #endif // SERIALMANAGER_H

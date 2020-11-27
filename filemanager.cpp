@@ -5,8 +5,10 @@ FileManager::FileManager(QObject *parent) : QObject(parent)
     Q_UNUSED(parent)
     if(!dir.exists(MapFolder)){
         dir.mkdir(MapFolder);
+
     }
-    connect(serial,&SerialManager::readDone,this,&FileManager::readSerial);
+    startTimer(5000);
+    setmaplist();
     qDebug()<<"file manager create";
 }
 
@@ -69,6 +71,8 @@ bool FileManager::setParms(QString filename)
     return true;
 }
 
+
+
 bool FileManager::startCollection()
 {
     return true;
@@ -105,7 +109,38 @@ bool FileManager::parseFile(QString filename)
     return error.error==QJsonParseError::NoError?true:false;
 }
 
+QStringList FileManager::getmaplist()
+{
+    return _maplist;
+}
+
+void FileManager::setmaplist()
+{
+    QDir dir(MapFolder);
+    QStringList list;
+    QFileInfoList infolist=dir.entryInfoList();
+    for(auto &&i:infolist){
+        if(i.suffix()=="json")
+        {
+            list.append(i.fileName());
+        }
+    }
+    if(_maplist!=list){
+        _maplist=list;
+        emit maplistupdata();
+    }
+}
+
 void FileManager::readSerial(const QString msg)
 {
+
     gpsData=msg;
+    qDebug()<<gpsData;
+}
+
+void FileManager::timerEvent(QTimerEvent *event)
+{
+    Q_UNUSED(event)
+    qDebug()<<"file time event";
+    setmaplist();
 }

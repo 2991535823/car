@@ -33,7 +33,7 @@ Rectangle{
                     Selectbox {
                         id: selectbox
                         prompttext: "地图选择:"
-
+                        promptmodel: file.maplist
                         width: parent.width
                     }
 

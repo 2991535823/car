@@ -26,28 +26,35 @@ public:
     };
     Q_INVOKABLE bool doCmd(Cmd cmd);
     Q_INVOKABLE bool setParms(QString filename);
+    Q_PROPERTY(QStringList maplist READ getmaplist NOTIFY maplistupdata)
+
 private:
     bool startCollection();
     bool stopCollection();
     bool doneCollection();
     bool parseFile(QString filename);
-    const QString MapFolder="D:/Map/";
+    QStringList getmaplist();
+    void setmaplist();
+    QString MapFolder="D:/Map/";
     QString _filename="default";
-    const QString Suffix=".json";
+    QString Suffix=".json";
 
 
     QFile *_file;
     QDir dir;
-
-
-    SerialManager *serial=new SerialManager;
+    QStringList _maplist;
     QString createtime;
     QString className="filemanager debug:";
     QString gpsData;
-signals:
 
+signals:
+void maplistupdata();
 public slots:
     void readSerial(const QString msg);
+
+    // QObject interface
+protected:
+    virtual void timerEvent(QTimerEvent *event) override;
 };
 
 #endif // FILEMANAGER_H
