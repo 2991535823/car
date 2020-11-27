@@ -1,11 +1,18 @@
 import QtQuick 2.12
 import QtQuick.Window 2.12
-
+import SerialManager 1.0
 Window {
     visible: true
     width: 1080
     height: width/16*9
     title: qsTr("Control")
+    Serial{
+        id:manager
+    }
+    Component.onCompleted: {
+        manager.setParms("115200","COM3");
+    }
+
     Tabwindows {
         id: tabs
         width: parent.width; height: parent.height

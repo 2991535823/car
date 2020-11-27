@@ -43,9 +43,9 @@ Rectangle{
                         width: parent.width
                     }
                     Selectbox {
-                        prompttext:"模式选择:"
                         promptmodel: ["起点-终点","终点-起点","当前-终点","终点-起点"]
                         width: parent.width
+                        prompttext: qsTr("模式选择:")
                     }
                 }
 

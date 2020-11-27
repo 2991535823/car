@@ -1,8 +1,12 @@
 import QtQuick 2.0
 import QtQuick.Controls 2.13
-
+import SerialManager 1.0
 Rectangle{
     id: root
+    property int serialConnect: 3
+    property int serialDisconnect: 4
+    property var analysisMsg
+    property bool analysisresult: false
 
     Row {
         id: row
@@ -33,13 +37,14 @@ Rectangle{
                     anchors.top: parent.top
 
                     Selectbox {
-                        id: selectbox
+                        id: selectcom
                         width: parent.width
                         prompttext: "串口选择:"
+                        promptmodel: manager.ports
                     }
 
                     Selectbox {
-                        id: selectbox1
+                        id: selectbaudrate
                         width: parent.width
                         prompttext: "波 特 率 :"
                         promptmodel: [4800,7200,9600,14400,19200,38400,76800,115200,128000,921600]
@@ -103,8 +108,18 @@ Rectangle{
                         height: parent.height*0.4
                         _text:"数据接收"
                         textsize: 10
+                        TextInput{
+                            id:msdatarecivetext
+                            wrapMode: TextEdit.WrapAnywhere
+                            anchors.fill: parent
+                            anchors.margins: 10
+                            focus: true
+
+
+                        }
                     }
                     Button{
+                        id: msdataon
                         text: "显示"
                         anchors.right: msdatarecive.right
                         checkable: true
@@ -125,6 +140,7 @@ Rectangle{
                             anchors.margins: 10
                             KeyNavigation.tab:mssend
                             TextInput{
+                                id:datasendtext
                                 wrapMode: Text.WordWrap
                                 anchors.fill: parent
                                 anchors.margins: 10
@@ -137,8 +153,8 @@ Rectangle{
                     }
                     Button{
                         id:mssend
+                        text: qsTr("发送")
                         anchors.right: msdatasend.right
-                        text: "发送"
                     }
                 }
 
@@ -186,21 +202,21 @@ Rectangle{
                                     id: carx
                                     width: parent.width
                                     prompttext: "X:"
-                                    _text:0+""
+                                    _text:msdataon.checked?analysisMsg[12]:""
                                     editable: false
                                 }
                                 Editarea {
                                     id: cary
                                     width: parent.width
                                     prompttext: "Y:"
-                                    _text:0+""
+                                    _text:msdataon.checked?analysisMsg[13]:""
                                     editable: false
                                 }
                                 Editarea {
                                     id: cayz
                                     width: parent.width
                                     prompttext: "Z:"
-                                    _text:0+""
+                                    _text:msdataon.checked?analysisMsg[14]:""
                                     editable: false
                                 }
                             }
@@ -219,21 +235,21 @@ Rectangle{
                                     id: cargx
                                     width: parent.width
                                     prompttext: "经度:"
-                                    _text:0+""
+                                    _text:msdataon.checked?analysisMsg[9]:""
                                     editable: false
                                 }
                                 Editarea {
                                     id: cargy
                                     width: parent.width
                                     prompttext: "维度:"
-                                    _text:0+""
+                                    _text:msdataon.checked?analysisMsg[10]:""
                                     editable: false
                                 }
                                 Editarea {
                                     id: caygz
                                     width: parent.width
                                     prompttext: "高程:"
-                                    _text:0+""
+                                    _text:msdataon.checked?analysisMsg[11]:""
                                     editable: false
                                 }
                             }
@@ -251,14 +267,14 @@ Rectangle{
                                     id: carcourse
                                     width: parent.width
                                     prompttext: "航向角:"
-                                    _text:0+""
+                                    _text:msdataon.checked?analysisMsg[5]:""
                                     editable: false
                                 }
                                 Editarea {
                                     id: carpitch
                                     width: parent.width
                                     prompttext: "俯仰角:"
-                                    _text:0+""
+                                    _text:msdataon.checked?analysisMsg[6]:""
                                     editable: false
                                 }
                             }
@@ -275,30 +291,87 @@ Rectangle{
                                 Editarea {
                                     id: carsatellite
                                     width: parent.width
-                                    prompttext: "卫星数:"
-                                    _text:0+""
+                                    prompttext: "解状态:"
+                                    _text:msdataon.checked?analysisMsg[15]:""
                                     editable: false
                                 }
                                 Editarea {
                                     id: carresult
                                     width: parent.width
-                                    prompttext: "解算结果:"
-                                    _text:4+""
+                                    prompttext: "解有效性:"
+                                    _text:analysisresult?"有效":"无效"
                                     editable: false
                                 }
                             }
                         }
-
-
-
                     }
                 }
-
-
             }
 
         }
 
+    }
+
+    Connections {
+        target: msconnet
+        onClicked: {
+
+            selectbaudrate.enabled=!msconnet.checked;
+            selectcom.enabled=!msconnet.checked;
+            if(msconnet.checked)
+            {
+                manager.setParms(selectbaudrate.selectitem,selectcom.selectitem);
+
+                manager.doCmd(serialConnect);
+
+            }else{
+                manager.doCmd(serialDisconnect);
+            }
+        }
+
+    }
+
+    Connections {
+        target: msdisconnect
+        onClicked: {
+            selectbaudrate.enabled=true;
+            selectcom.enabled=true;
+            msconnet.checked=false;
+            manager.doCmd(serialDisconnect);
+        }
+    }
+
+    Connections {
+        target: manager
+        onReadDone:{
+            msdatarecivetext.text=msdataon.checked?msg:""
+            if(msg.length>100)
+            {
+                analysisMsg=msg.split(',')
+            }
+
+
+            analysisdata(msg);
+        }
+    }
+
+    Connections {
+        target: mssend
+        onClicked: {
+            if(datasendtext.text!=""){
+                manager.sendMsg(datasendtext.text);
+            }
+            datasendtext.text=""
+        }
+    }
+    function analysisdata(data){
+        var a=data[0].charCodeAt();
+        for(var i=1;i<data.length-4;i++)
+        {
+            a=a ^ data[i].charCodeAt();
+        }
+        var c=parseInt( data.slice(-4),16)
+        analysisresult= (a=== parseInt(data.slice(-4),16))
     }
 }
 
