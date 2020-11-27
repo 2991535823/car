@@ -6,6 +6,7 @@ Rectangle{
     property int start: 0 /*file.Start*/
     property int stop: 1 /*file.Stop*/
     property int done: 2 /*file.Done*/
+    property int deletemap: 3
     Row {
         id: row
         width: root.width
@@ -162,6 +163,7 @@ Rectangle{
                     id: button2
                     width: parent.width*0.3
                     text: qsTr("删除")
+
                 }
 
                 Button {
@@ -187,6 +189,15 @@ Rectangle{
         target: mcname
         onEdited:{
              file.setParms(mcname.text)
+        }
+    }
+
+
+    Connections {
+        target: button2
+        onClicked: {
+            file.editfile=mcselect.selectitem
+            file.doCmd(deletemap)
         }
     }
 }

@@ -7,7 +7,7 @@ FileManager::FileManager(QObject *parent) : QObject(parent)
         dir.mkdir(MapFolder);
 
     }
-    startTimer(5000);
+    startTimer(1000);
     setmaplist();
     qDebug()<<"file manager create";
 }
@@ -32,6 +32,9 @@ bool FileManager::doCmd(FileManager::Cmd cmd)
         break;
     case Done:
         code=doneCollection();
+        break;
+    case Delete:
+        code=deleteMap();
         break;
     default:
         break;
@@ -71,6 +74,12 @@ bool FileManager::setParms(QString filename)
     return true;
 }
 
+void FileManager::seteditfile(QString name)
+{
+    qDebug()<<name;
+    _editfile=name;
+}
+
 
 
 bool FileManager::startCollection()
@@ -86,6 +95,13 @@ bool FileManager::stopCollection()
 bool FileManager::doneCollection()
 {
     return true;
+}
+
+bool FileManager::deleteMap()
+{
+    QFile *deletefile=new QFile(MapFolder+_editfile);
+    return deletefile->remove();
+
 }
 
 bool FileManager::parseFile(QString filename)
@@ -141,6 +157,5 @@ void FileManager::readSerial(const QString msg)
 void FileManager::timerEvent(QTimerEvent *event)
 {
     Q_UNUSED(event)
-    qDebug()<<"file time event";
     setmaplist();
 }

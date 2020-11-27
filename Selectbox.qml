@@ -8,6 +8,7 @@ FocusScope{
     property bool bcheak: true
     property var _color: ["#EBEBEB","#ebdedd"]
     property string selectitem: box.currentText
+    signal edited(var msg)
     id:root
     Row {
         width: parent.width
@@ -28,7 +29,10 @@ FocusScope{
             model: promptmodel
             width:parent.width-label.width
             font.family: "Tahoma"
+            onActivated: {
 
+                root.edited(selectitem);
+            }
         }
     }
 

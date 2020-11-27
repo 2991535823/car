@@ -26,15 +26,19 @@ public:
     };
     Q_INVOKABLE bool doCmd(Cmd cmd);
     Q_INVOKABLE bool setParms(QString filename);
-    Q_PROPERTY(QStringList maplist READ getmaplist NOTIFY maplistupdata)
 
+    Q_PROPERTY(QStringList maplist READ getmaplist NOTIFY maplistupdata)
+    Q_PROPERTY(QString editfile WRITE seteditfile)
 private:
     bool startCollection();
     bool stopCollection();
     bool doneCollection();
+    bool deleteMap();
     bool parseFile(QString filename);
     QStringList getmaplist();
+    void seteditfile(QString name);
     void setmaplist();
+
     QString MapFolder="D:/Map/";
     QString _filename="default";
     QString Suffix=".json";
@@ -43,6 +47,7 @@ private:
     QFile *_file;
     QDir dir;
     QStringList _maplist;
+    QString _editfile;
     QString createtime;
     QString className="filemanager debug:";
     QString gpsData;
