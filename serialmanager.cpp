@@ -2,14 +2,16 @@
 
 SerialManager::SerialManager(QObject *parent) : QObject(parent)
 {
-    qDebug()<<"create SerialManager and start timer";
+    qDebug()<<"Serial Manager create and start serialport scanning";
     startTimer(5000);
     setports();
 }
 
 SerialManager::~SerialManager()
 {
-    qDebug()<<"delete SerialManger";
+    delete port;
+    delete info;
+    qDebug()<<"Serial Manger destory";
 }
 
 bool SerialManager::doCmd(Cmd cmd)

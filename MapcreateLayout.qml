@@ -3,7 +3,9 @@ import QtQuick.Controls 2.13
 
 Rectangle{
     id: root
-
+    property int start: 0 /*file.Start*/
+    property int stop: 1 /*file.Stop*/
+    property int done: 2 /*file.Done*/
     Row {
         id: row
         width: root.width
@@ -38,6 +40,7 @@ Rectangle{
                         width: parent.width
                         prompttext: "地 图 名 称 :"
                         KeyNavigation.tab:mcmode
+
                     }
 
                     Selectbox {
@@ -172,6 +175,19 @@ Rectangle{
         }
 
 
+    }
+
+    Connections {
+        target: mccapon
+        onClicked: {
+           file.doCmd(start)
+        }
+    }
+    Connections {
+        target: mcname
+        onEdited:{
+             file.setParms(mcname.text)
+        }
     }
 }
 

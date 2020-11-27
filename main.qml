@@ -1,6 +1,7 @@
 import QtQuick 2.12
 import QtQuick.Window 2.12
 import SerialManager 1.0
+import FileManager 1.0
 Window {
     visible: true
     width: 1080
@@ -9,8 +10,12 @@ Window {
     Serial{
         id:manager
     }
+    File{
+        id:file
+    }
+
     Component.onCompleted: {
-        manager.setParms("115200","COM3");
+        console.log("page paint done")
     }
 
     Tabwindows {

@@ -1,15 +1,14 @@
 #include <QGuiApplication>
 #include <QQmlApplicationEngine>
 #include "serialmanager.h"
-#include <QQmlEngine>
-#include <QtQml>
+#include "filemanager.h"
 int main(int argc, char *argv[])
 {
     QCoreApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
 
     QGuiApplication app(argc, argv);
     qmlRegisterType<SerialManager>("SerialManager",1,0,"Serial");
-
+    qmlRegisterType<FileManager>("FileManager",1,0,"File");
     QQmlApplicationEngine engine;
     const QUrl url(QStringLiteral("qrc:/main.qml"));
     QObject::connect(&engine, &QQmlApplicationEngine::objectCreated,
