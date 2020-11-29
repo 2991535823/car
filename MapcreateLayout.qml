@@ -1,6 +1,6 @@
 import QtQuick 2.0
 import QtQuick.Controls 2.13
-
+import Qt.labs.platform 1.1
 Rectangle{
     id: root
     property int start: 0 /*file.Start*/
@@ -182,13 +182,13 @@ Rectangle{
     Connections {
         target: mccapon
         onClicked: {
-           file.doCmd(start)
+            file.doCmd(start)
         }
     }
     Connections {
         target: mcname
         onEdited:{
-             file.setParms(mcname.text)
+            file.setParms(mcname.text)
         }
     }
 
@@ -198,6 +198,13 @@ Rectangle{
         onClicked: {
             file.editfile=mcselect.selectitem
             file.doCmd(deletemap)
+        }
+    }
+
+    Connections {
+        target: button
+        onClicked: {
+            file.doCmd(done)
         }
     }
 }

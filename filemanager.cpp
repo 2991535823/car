@@ -34,7 +34,7 @@ bool FileManager::doCmd(FileManager::Cmd cmd)
         code=doneCollection();
         break;
     case Delete:
-        code=deleteMap();
+        code=deleteFile();
         break;
     default:
         break;
@@ -46,31 +46,20 @@ bool FileManager::setParms(QString filename)
 {
     //正则校验
     _filename=filename;
-
+    clearMapData();
     QJsonObject jsonObject;
     QJsonDocument jsonDoc;
 
     bool fileExit=_file->exists(MapFolder+_filename+Suffix);
     QString filestatus=fileExit?"Edit":"Create";
-
-    _file=new QFile(MapFolder+_filename+Suffix);
     QDateTime time=QDateTime::currentDateTime();
     if(fileExit){
-        parseFile(filename);
-        jsonObject.insert("Create",createtime);
+        jsonObject = readFile(filename);
+    }else {
+        createFile(filename);
     }
     jsonObject.insert(filestatus,time.toString());
-    jsonDoc.setObject(jsonObject);
-    if(_file->open(QIODevice::ReadWrite|QIODevice::Truncate))
-    {
-        qDebug()<<this->className<<"open success";
-    }else {
-        qDebug()<<this->className<<"open  failed";
-    }
-
-    _file->write(jsonDoc.toJson());
-    _file->close();
-    qDebug()<<this->className;
+    writefile(filename,jsonObject);
     return true;
 }
 
@@ -84,6 +73,8 @@ void FileManager::seteditfile(QString name)
 
 bool FileManager::startCollection()
 {
+
+    map.append(gpsData);
     return true;
 }
 
@@ -94,40 +85,70 @@ bool FileManager::stopCollection()
 
 bool FileManager::doneCollection()
 {
+    QJsonObject jsonobj=readFile(_filename);
+    jsonobj.insert("data",map);
+    writefile(_filename,jsonobj);
     return true;
 }
 
-bool FileManager::deleteMap()
+bool FileManager::deleteFile()
 {
     QFile *deletefile=new QFile(MapFolder+_editfile);
     return deletefile->remove();
-
 }
 
-bool FileManager::parseFile(QString filename)
+QJsonObject FileManager::readFile(QString filename)
 {
-    _file->setFileName(MapFolder+filename+Suffix);
+    _file=new QFile(MapFolder+filename+Suffix);
     QJsonParseError error;
+    QJsonObject tempobj;
+    QJsonDocument tempdoc;
     if(_file->exists()){
         if(_file->open(QIODevice::ReadOnly|QIODevice::Text))
         {
-            QJsonObject tempobj;
-            QJsonDocument tempdoc;
+
             tempdoc=QJsonDocument::fromJson(_file->readAll(),&error);
             tempobj=tempdoc.object();
-
-            createtime=tempobj["Create"].toString();
-            qDebug()<<createtime;
             _file->close();
         }
 
     }
-    return error.error==QJsonParseError::NoError?true:false;
+    return tempobj;
 }
 
 QStringList FileManager::getmaplist()
 {
     return _maplist;
+}
+
+bool FileManager::writefile(QString filename, QJsonObject obj)
+{
+    _file->setFileName(MapFolder+filename+Suffix);
+    bool code=false;
+    if(_file->exists()){
+        if(_file->open(QIODevice::ReadWrite|QIODevice::Truncate))
+        {
+            QJsonDocument _doc(obj);
+            _file->write(_doc.toJson());
+            _file->close();
+            code=true;
+        }else {
+            code=false;
+        }
+    }
+    return code;
+}
+
+bool FileManager::createFile(QString filename)
+{
+    bool code=false;
+    _file=new QFile(MapFolder+filename+Suffix);
+    if(!_file->exists())
+    {
+        code=_file->open(QIODevice::ReadWrite|QIODevice::Text);
+        _file->close();
+    }
+    return code;
 }
 
 void FileManager::setmaplist()
@@ -147,11 +168,30 @@ void FileManager::setmaplist()
     }
 }
 
+void FileManager::setserial(SerialManager *manager)
+{
+    _serial = manager;
+    static int limit=0;
+    qDebug()<< "setserial:"<<limit;
+    if(limit==0)
+    {
+        connect(_serial,&SerialManager::readDone,this,&FileManager::readSerial);
+    }
+    limit++;
+}
+
+bool FileManager::clearMapData()
+{
+    for(int i=0;i<map.size();i++)
+    {
+        map.removeAt(i);
+    }
+    return true;
+}
+
 void FileManager::readSerial(const QString msg)
 {
-
     gpsData=msg;
-    qDebug()<<gpsData;
 }
 
 void FileManager::timerEvent(QTimerEvent *event)

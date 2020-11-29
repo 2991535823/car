@@ -15,7 +15,7 @@ Window {
     }
 
     Component.onCompleted: {
-        console.log("page paint done")
+        file.serial=manager
     }
 
     Tabwindows {

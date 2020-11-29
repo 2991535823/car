@@ -10,6 +10,7 @@
 #include <QDir>
 #include "serialmanager.h"
 #include <QDateTime>
+#include <QMessageBox>
 class FileManager : public QObject
 {
     Q_OBJECT
@@ -29,31 +30,47 @@ public:
 
     Q_PROPERTY(QStringList maplist READ getmaplist NOTIFY maplistupdata)
     Q_PROPERTY(QString editfile WRITE seteditfile)
+    Q_PROPERTY(SerialManager *serial WRITE setserial);
+
 private:
     bool startCollection();
     bool stopCollection();
     bool doneCollection();
-    bool deleteMap();
-    bool parseFile(QString filename);
+
+    bool deleteFile();
+    QJsonObject readFile(QString filename);
+    bool writefile(QString filename,QJsonObject obj);
+    bool createFile(QString filename);
+    //Q_PROPERTY
     QStringList getmaplist();
+
     void seteditfile(QString name);
     void setmaplist();
+    void setserial(SerialManager *manager);
 
+    bool clearMapData();
     QString MapFolder="D:/Map/";
     QString _filename="default";
     QString Suffix=".json";
 
-
+    //创建的地图
     QFile *_file;
     QDir dir;
+    //地图列表
     QStringList _maplist;
+    //选中的地图
     QString _editfile;
+
     QString createtime;
     QString className="filemanager debug:";
+    //gps数据
     QString gpsData;
-
+    //串口对象
+    SerialManager *_serial;
+    QJsonArray map;
+    int mapnode=0;
 signals:
-void maplistupdata();
+    void maplistupdata();
 public slots:
     void readSerial(const QString msg);
 
