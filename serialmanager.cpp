@@ -136,6 +136,5 @@ void SerialManager::timerEvent(QTimerEvent *event)
 {
     Q_UNUSED(event)
     setports();
-    qDebug()<<"timer event ok";
 }
 

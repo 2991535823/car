@@ -31,7 +31,7 @@ public:
     Q_PROPERTY(QStringList maplist READ getmaplist NOTIFY maplistupdata)
     Q_PROPERTY(QString editfile WRITE seteditfile)
     Q_PROPERTY(SerialManager *serial WRITE setserial);
-
+    Q_PROPERTY(int nodesize READ getNodeSize NOTIFY nodeSizeUpdata)
 private:
     bool startCollection();
     bool stopCollection();
@@ -43,11 +43,11 @@ private:
     bool createFile(QString filename);
     //Q_PROPERTY
     QStringList getmaplist();
-
+    int getNodeSize();
     void seteditfile(QString name);
     void setmaplist();
     void setserial(SerialManager *manager);
-
+    void setNodeSize();
     bool clearMapData();
     QString MapFolder="D:/Map/";
     QString _filename="default";
@@ -68,9 +68,10 @@ private:
     //串口对象
     SerialManager *_serial;
     QJsonArray map;
-    int mapnode=0;
+    int _nodesize=0;
 signals:
     void maplistupdata();
+    void nodeSizeUpdata();
 public slots:
     void readSerial(const QString msg);
 

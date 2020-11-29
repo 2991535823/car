@@ -9,6 +9,7 @@
         <file>MapcreateLayout.qml</file>
         <file>Editarea.qml</file>
         <file>SetDebugLayout.qml</file>
+        <file>MsgDiag.qml</file>
     </qresource>
     <qresource prefix="/img">
         <file>tab.png</file>

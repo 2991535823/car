@@ -26,11 +26,11 @@ FocusScope{
             id:box
             y: 0
             focus: true
+            enabled: bcheak
             model: promptmodel
             width:parent.width-label.width
             font.family: "Tahoma"
             onActivated: {
-
                 root.edited(selectitem);
             }
         }

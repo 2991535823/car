@@ -7,7 +7,7 @@ FileManager::FileManager(QObject *parent) : QObject(parent)
         dir.mkdir(MapFolder);
 
     }
-    startTimer(1000);
+    startTimer(500);
     setmaplist();
     qDebug()<<"file manager create";
 }
@@ -49,9 +49,10 @@ bool FileManager::setParms(QString filename)
     clearMapData();
     QJsonObject jsonObject;
     QJsonDocument jsonDoc;
-
     bool fileExit=_file->exists(MapFolder+_filename+Suffix);
+
     QString filestatus=fileExit?"Edit":"Create";
+
     QDateTime time=QDateTime::currentDateTime();
     if(fileExit){
         jsonObject = readFile(filename);
@@ -75,6 +76,7 @@ bool FileManager::startCollection()
 {
 
     map.append(gpsData);
+
     return true;
 }
 
@@ -88,6 +90,7 @@ bool FileManager::doneCollection()
     QJsonObject jsonobj=readFile(_filename);
     jsonobj.insert("data",map);
     writefile(_filename,jsonobj);
+    clearMapData();
     return true;
 }
 
@@ -119,6 +122,11 @@ QJsonObject FileManager::readFile(QString filename)
 QStringList FileManager::getmaplist()
 {
     return _maplist;
+}
+
+int FileManager::getNodeSize()
+{
+    return _nodesize;
 }
 
 bool FileManager::writefile(QString filename, QJsonObject obj)
@@ -180,11 +188,22 @@ void FileManager::setserial(SerialManager *manager)
     limit++;
 }
 
+void FileManager::setNodeSize()
+{
+    if(_nodesize!=map.size())
+    {
+        _nodesize=map.size();
+        emit nodeSizeUpdata();
+    }
+
+}
+
 bool FileManager::clearMapData()
 {
-    for(int i=0;i<map.size();i++)
+    int length=map.size();
+    for(int i=0;i<length ;i++)
     {
-        map.removeAt(i);
+        map.removeFirst();
     }
     return true;
 }
@@ -198,4 +217,5 @@ void FileManager::timerEvent(QTimerEvent *event)
 {
     Q_UNUSED(event)
     setmaplist();
+    setNodeSize();
 }

@@ -55,6 +55,7 @@ Rectangle{
                         id: mctime
                         width: parent.width
                         prompttext: "采集时间(s):"
+                        bcheak: false
                         promptmodel: [0.2,0.5,1,2,4,8]
                     }
 
@@ -62,6 +63,7 @@ Rectangle{
                         id: mccount
                         width: parent.width
                         prompttext: "采集点个数:"
+                        text: file.nodesize+"个"
                         editable:false
                     }
 
@@ -92,7 +94,7 @@ Rectangle{
                     x: 9
                     y: 245
                     width: column .width
-                    text: qsTr("保存地图")
+                    text: qsTr("是否保存地图")
                     anchors.bottomMargin: 50
                     anchors.bottom: parent.bottom
                 }
@@ -178,21 +180,59 @@ Rectangle{
 
 
     }
+    Timer{
+        id:capture
+        repeat: true;
+        interval: mctime.selectitem*1000
+        onTriggered: {
+            file.doCmd(start)
+        }
+    }
+
+    MsgDiag{
+        id:createbox
+    }
+    MsgDiag{
+        id:savebox
+    }
 
     Connections {
         target: mccapon
         onClicked: {
-            file.doCmd(start)
+            if(mcmode.selectitem==="单点")
+            {
+                file.doCmd(start)
+            }else{
+                capture.stop()
+                capture.restart()
+                mctime.bcheak=false
+                createbox.open("地图数据已经开始连续采集!!!")
+            }
+
+
         }
     }
+    Connections{
+        target: mcmode
+        onEdited:{
+            if(msg===mcmode.promptmodel[0])
+            {
+                mctime.bcheak=false;
+            }else
+            {
+                mctime.bcheak=true;
+            }
+        }
+    }
+
     Connections {
         target: mcname
         onEdited:{
+            createbox.open("创建了"+mcname.text+".json地图文件,保存文件后方可重新创建！")
+            mcname.editable=false
             file.setParms(mcname.text)
         }
     }
-
-
     Connections {
         target: button2
         onClicked: {
@@ -200,11 +240,34 @@ Rectangle{
             file.doCmd(deletemap)
         }
     }
-
     Connections {
         target: button
         onClicked: {
-            file.doCmd(done)
+            savebox.options=true
+            savebox.open("是否保存采集点数据到"+mcname.text+".json文件中?")
+
+        }
+    }
+
+    Connections {
+        target: savebox
+        onClickmsg:{
+            mcname.editable=true
+            mctime.bcheak=true
+            capture.stop();
+            if(info){
+                file.doCmd(done)
+            }else{
+                console.log("cancel")
+            }
+        }
+    }
+
+    Connections {
+        target: mccapoff
+        onClicked: {
+            capture.stop()
+            createbox.open("数据点采集暂停，可以选择保存数据，或者继续")
         }
     }
 }
