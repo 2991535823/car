@@ -5,6 +5,7 @@
 #include <QApplication>
 int main(int argc, char *argv[])
 {
+    //test
     QApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
 
     QApplication app(argc, argv);

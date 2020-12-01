@@ -49,10 +49,14 @@ void SerialManager::setParms(QString baudrate, QString com)
 bool SerialManager::sendMsg(QString msg)
 {
     int code;
-    if(msg.indexOf('\n')!=-1){
-        msg+"\r\n";
+    QString _msg=msg;
+    //有问题
+    if(_msg.indexOf('\n')==-1){
+        qDebug()<<"换行";
+        _msg+"\r\n";
     }
-    code= port->write(msg.toLatin1());
+    qDebug()<<_msg;
+    code= port->write(_msg.toLatin1());
     return code != -1?true:false;
 }
 
@@ -127,6 +131,7 @@ void SerialManager::readSerial()
             serialMsg=dataRoom.left(elposition+1);
             dataRoom.remove(0,elposition+1);
             elposition=0;
+            qDebug()<<serialMsg;
             emit readDone(serialMsg);
         }
     }
