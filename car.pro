@@ -16,6 +16,7 @@ DEFINES += QT_DEPRECATED_WARNINGS
 SOURCES += \
         filemanager.cpp \
         main.cpp \
+        mapmanager.cpp \
         serialmanager.cpp
 
 RESOURCES += qml.qrc
@@ -36,4 +37,5 @@ DISTFILES += \
 
 HEADERS += \
     filemanager.h \
+    mapmanager.h \
     serialmanager.h

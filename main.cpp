@@ -3,6 +3,7 @@
 #include "serialmanager.h"
 #include "filemanager.h"
 #include <QApplication>
+#include "mapmanager.h"
 int main(int argc, char *argv[])
 {
     //test
@@ -11,6 +12,7 @@ int main(int argc, char *argv[])
     QApplication app(argc, argv);
     qmlRegisterType<SerialManager>("SerialManager",1,0,"Serial");
     qmlRegisterType<FileManager>("FileManager",1,0,"File");
+    qmlRegisterType<MapManager> ("MapManager",1,0,"Map");
     QQmlApplicationEngine engine;
     const QUrl url(QStringLiteral("qrc:/main.qml"));
     QObject::connect(&engine, &QQmlApplicationEngine::objectCreated,

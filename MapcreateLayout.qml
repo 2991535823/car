@@ -1,6 +1,7 @@
 import QtQuick 2.0
 import QtQuick.Controls 2.13
 import Qt.labs.platform 1.0
+import MapManager 1.0
 Rectangle{
     id: root
     property int start: 0 /*file.Start*/
@@ -142,6 +143,15 @@ Rectangle{
                             id: mcviewbtn
                             width: parent.width*0.3
                             text: qsTr("显示")
+                        }
+                    }
+                    Rectangle{
+                        id:testmap
+                        width: parent.width
+                        height: parent.height-row1.height
+                        Map{
+                            anchors.fill: testmap
+                            anchors.margins: 15
                         }
                     }
                 }

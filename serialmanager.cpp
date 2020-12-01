@@ -49,7 +49,6 @@ void SerialManager::setParms(QString baudrate, QString com)
 bool SerialManager::sendMsg(QString msg,bool orNot16)
 {
     int code;
-    QString temp="0D0A";
     //有问题
     if(orNot16){
         _msg=String2Hex(msg);
