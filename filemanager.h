@@ -25,9 +25,10 @@ public:
         Delete,
         Edit
     };
+    //qml 接口
     Q_INVOKABLE bool doCmd(Cmd cmd);
     Q_INVOKABLE bool setParms(QString filename);
-
+    //qml 属性
     Q_PROPERTY(QStringList maplist READ getmaplist NOTIFY maplistupdata)
     Q_PROPERTY(QString editfile WRITE seteditfile)
     Q_PROPERTY(SerialManager *serial WRITE setserial);
@@ -37,6 +38,7 @@ private:
     bool stopCollection();
     bool doneCollection();
 
+    //文件的操作
     bool deleteFile();
     QJsonObject readFile(QString filename);
     bool writefile(QString filename,QJsonObject obj);
@@ -49,20 +51,24 @@ private:
     void setserial(SerialManager *manager);
     void setNodeSize();
     bool clearMapData();
-    QString MapFolder="D:/Map/";
-    QString _filename="default";
-    QString Suffix=".json";
 
+    //地图存放位置及文件格式
+    QString MapFolder="D:/Map/";
+    QString Suffix=".json";
+    //创建的地图名称
+    QString _filename="default";
     //创建的地图
     QFile *_file;
     QDir dir;
     //地图列表
     QStringList _maplist;
-    //选中的地图
+
+    //选中编辑的地图
     QString _editfile;
 
     QString createtime;
-    QString className="filemanager debug:";
+
+    const QString className="filemanager debug:";
     //gps数据
     QString gpsData;
     //串口对象

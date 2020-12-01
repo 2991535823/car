@@ -7,7 +7,7 @@ Rectangle{
     property int serialDisconnect: 4
     property var analysisMsg
     property bool analysisresult: false
-
+    property bool format: selectdataformat.selectitem!="字符串"
     Row {
         id: row
         width: root.width
@@ -48,6 +48,12 @@ Rectangle{
                         width: parent.width
                         prompttext: "波 特 率 :"
                         promptmodel: [4800,7200,9600,14400,19200,38400,76800,115200,128000,921600]
+                    }
+                    Selectbox {
+                        id: selectdataformat
+                        width: parent.width
+                        prompttext: "数据格式:"
+                        promptmodel: ["字符串","16进制"]
                     }
 
                 }
@@ -110,6 +116,7 @@ Rectangle{
                         textsize: 10
                         TextInput{
                             id:msdatarecivetext
+                            font.family: "Tahoma"
                             wrapMode: TextEdit.WrapAnywhere
                             anchors.fill: parent
                             anchors.margins: 10
@@ -141,7 +148,8 @@ Rectangle{
                             KeyNavigation.tab:mssend
                             TextInput{
                                 id:datasendtext
-                                wrapMode: Text.WordWrap
+                                font.family: "Tahoma"
+                                wrapMode: TextEdit.WrapAnywhere
                                 anchors.fill: parent
                                 anchors.margins: 10
                                 focus: true
@@ -359,7 +367,7 @@ Rectangle{
         target: mssend
         onClicked: {
             if(datasendtext.text!=""){
-                manager.sendMsg(datasendtext.text);
+                manager.sendMsg(datasendtext.text,format);
             }
             datasendtext.text=""
         }

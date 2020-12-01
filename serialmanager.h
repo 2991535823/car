@@ -25,7 +25,7 @@ public:
 
     Q_INVOKABLE bool doCmd(Cmd cmd);
     Q_INVOKABLE void setParms(QString baudrate,QString com);
-    Q_INVOKABLE bool sendMsg(QString msg);
+    Q_INVOKABLE bool sendMsg(QString msg,bool orNot16=false);
     Q_PROPERTY(QStringList ports READ getports NOTIFY portsupdata)
 
 private:
@@ -34,6 +34,8 @@ private:
     bool carRestart();
     bool serialConnect();
     bool serialDisconnect();
+    QByteArray String2Hex(QString &str);
+    char ConvertHexChar(char ch);
     QStringList getports();
     void setports();
     QStringList _ports;
@@ -43,7 +45,8 @@ private:
     QSerialPort *port=new QSerialPort(this);
     QSerialPortInfo *info=new QSerialPortInfo();
     QByteArray dataRoom="";
-
+    //存放16进制数据
+    QByteArray _msg;
 signals:
     void readDone(const QString msg);
     void portsupdata();
