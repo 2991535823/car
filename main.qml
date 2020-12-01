@@ -13,7 +13,6 @@ Window {
     File{
         id:file
     }
-
     Component.onCompleted: {
         file.serial=manager
     }
