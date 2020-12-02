@@ -1,6 +1,6 @@
 import QtQuick 2.0
 import QtQuick.Controls 2.13
-
+import MapManager 1.0
 Rectangle{
     id: root
 
@@ -108,6 +108,16 @@ Rectangle{
                 anchors.topMargin: mrview.textsize
                 anchors.top: parent.top
                 anchors.horizontalCenter: parent.horizontalCenter
+                    Rectangle{
+                        id:monitor
+                        anchors.fill: parent
+                        anchors.margins: 15
+                        Map{
+                            id:monitormap
+                            anchors.fill: parent
+                        }
+                    }
+
 
             }
 
@@ -129,6 +139,7 @@ Rectangle{
                 Button {
                     id: mrbtncar
                     text: qsTr("显示小车")
+                    checkable: true
                     anchors.rightMargin: 20
                     anchors.verticalCenter: parent.verticalCenter
                     anchors.right: parent.right
@@ -137,6 +148,16 @@ Rectangle{
         }
     }
 
+    Connections {
+        target: mrbtncar
+        onClicked: {
+            monitormap.viewcar=mrbtncar.checked
+        }
+    }
+    Component.onCompleted: {
+        monitormap.serial=manager;
+        monitormap.file=file;
+    }
 }
 
 /*##^##

@@ -33,6 +33,8 @@ public:
     Q_PROPERTY(QString editfile WRITE seteditfile)
     Q_PROPERTY(SerialManager *serial WRITE setserial);
     Q_PROPERTY(int nodesize READ getNodeSize NOTIFY nodeSizeUpdata)
+    //选中编辑的地图,暴露接口
+    QString _editfile;
 private:
     bool startCollection();
     bool stopCollection();
@@ -62,9 +64,6 @@ private:
     QDir dir;
     //地图列表
     QStringList _maplist;
-
-    //选中编辑的地图
-    QString _editfile;
 
     QString createtime;
 
