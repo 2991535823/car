@@ -3,38 +3,64 @@
 MapManager::MapManager(QQuickItem *parent):QQuickPaintedItem(parent)
 {
     setAcceptedMouseButtons(Qt::LeftButton|Qt::RightButton);
+    startTimer(1000);
 }
 
 
 void MapManager::paint(QPainter *painter)
 {
     painter->setRenderHint(QPainter::Antialiasing);
-
+    painter->setWindow(0, height(),  width(), -1 * height());//坐标系变换
     if(_viewCar){
-       painter->setPen(_pen);
-      painter->drawPoint(carPoint);
+        painter->setPen(_pen);
+        painter->drawPoint(carPoint);
 
     }else
     {
         qDebug()<<"clear car";
     }
-    painter->setPen(Qt::black);
-    painter->drawLine(line);
+    if(_viewMap)
+    {
+        painter->setPen(Qt::black);
+        map=file2map();
+        for(auto &&i:map)
+        {
+            QLineF tem=transLine(i);
+            painter->drawLine(tem);
+        }
+
+    }else {
+
+    }
+
 }
 
 void MapManager::mousePressEvent(QMouseEvent *event)
 {
     switch (event->button()) {
     case Qt::LeftButton:
-        line=QLineF(0,0,200,400);
+//        line=QLineF(0,0,200,400);
         break;
     case Qt::RightButton:
-        line=QLineF(0,0,400,200);
+//        line=QLineF(0,0,400,200);
         break;
     default:
         break;
     }
     update();
+}
+
+void MapManager::timerEvent(QTimerEvent *event)
+{
+    Q_UNUSED(event);
+    _width=width();
+    _height=height();
+//    qDebug()<<"width"<<_width<<"height"<<_height;
+//    if(carLocation.indexOf("$GPHCD"))
+//    {
+//        carPoint=QPointF(carLocation[12].toInt(),carLocation[13].toInt());
+//    }
+//    update();
 }
 void MapManager::setserial(SerialManager *manager)
 {
@@ -51,7 +77,6 @@ void MapManager::setserial(SerialManager *manager)
 void MapManager::setfile(FileManager *manager)
 {
     _file=manager;
-    qDebug()<<"地图拥有了文件系统对象";
 }
 
 void MapManager::setviewcar(bool view)
@@ -66,10 +91,58 @@ void MapManager::setviewmap(bool view)
     update();
 }
 
+QLineF MapManager::transLine(QLineF line)
+{
+    QPointF start=line.p1();
+    QPointF end=line.p2();
+    float mapsizex=maplimit[0]-maplimit[2];
+    float mapsizey=maplimit[1]-maplimit[3];
+    int scalex=width()/mapsizex;
+    qDebug()<<width();
+    int scaley=height()/mapsizey;
+    qreal x=start.x()-maplimit[2];
+    qreal y=start.y()-maplimit[3];
+    start =QPointF(x*scalex,y*scaley);
+    x=end.x()-maplimit[2];
+    y=end.y()-maplimit[3];
+    end =QPointF(x*scalex,y*scaley);
+    return QLineF(start,end);
+}
+
+
+
+QVector<QLineF> MapManager::file2map()
+{
+    QJsonObject _map=_file->getmap();
+    QJsonArray _mapnode=_map["data"].toArray();
+    qDebug()<<_mapnode;
+    QVector<QLineF> lineGroup;
+    float x0,y0,x1,y1;
+    for (int j=0;j<4;j++) {
+        maplimit[j]=0;
+    }
+    QStringList start,end;
+    for (int i=0;i<_mapnode.size()-1;i++) {
+        start=_mapnode[i].toString().split(',');
+        x0=start[12].toFloat();
+        y0=start[13].toFloat();
+        end=_mapnode[i+1].toString().split(',');
+        x1=end[12].toFloat();
+        y1=end[13].toFloat();
+        //有问题
+        maplimit[0]=qMax(maplimit[0],x0>x1?x0:x1);
+        maplimit[1]=qMax(maplimit[1],y0>y1?y0:y1);
+        maplimit[2]=qMin(maplimit[2],x0<x1?x0:x1);
+        maplimit[3]=qMin(maplimit[3],y0<y1?y0:y1);
+        lineGroup.insert(i,QLineF(x0,y0,x1,y1));
+    }
+    return lineGroup;
+}
+
 
 
 void MapManager::readSerial(const QString msg)
 {
-    carLocation=msg;
+    carLocation=msg.split(',');
     qDebug()<<carLocation;
 }

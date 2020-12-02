@@ -35,6 +35,7 @@ public:
     Q_PROPERTY(int nodesize READ getNodeSize NOTIFY nodeSizeUpdata)
     //选中编辑的地图,暴露接口
     QString _editfile;
+    QJsonObject getmap();
 private:
     bool startCollection();
     bool stopCollection();
@@ -60,6 +61,7 @@ private:
     //创建的地图名称
     QString _filename="default";
     //创建的地图
+
     QFile *_file;
     QDir dir;
     //地图列表

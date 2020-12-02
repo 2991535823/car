@@ -64,9 +64,17 @@ bool FileManager::setParms(QString filename)
     return true;
 }
 
+QJsonObject FileManager::getmap()
+{
+    QString filename=_editfile.remove(".json");
+    qDebug()<<filename;
+    QJsonObject temp=readFile(filename);
+    return  temp;
+}
+
 void FileManager::seteditfile(QString name)
 {
-    qDebug()<<name;
+//    qDebug()<<name;
     _editfile=name;
 }
 
@@ -180,7 +188,7 @@ void FileManager::setserial(SerialManager *manager)
 {
     _serial = manager;
     static int limit=0;
-    qDebug()<< "setserial:"<<limit;
+//    qDebug()<< "setserial:"<<limit;
     if(limit==0)
     {
         connect(_serial,&SerialManager::readDone,this,&FileManager::readSerial);

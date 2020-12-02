@@ -115,6 +115,7 @@ Rectangle{
                         Map{
                             id:monitormap
                             anchors.fill: parent
+
                         }
                     }
 
@@ -131,6 +132,8 @@ Rectangle{
                 Button {
                     id: mrbtnmap
                     text: qsTr("显示地图")
+                    checkable: true
+                    font.family: "Tahoma"
                     anchors.verticalCenter: parent.verticalCenter
                     anchors.rightMargin: 20
                     anchors.right: mrbtncar.left
@@ -139,6 +142,7 @@ Rectangle{
                 Button {
                     id: mrbtncar
                     text: qsTr("显示小车")
+                    font.family: "Tahoma"
                     checkable: true
                     anchors.rightMargin: 20
                     anchors.verticalCenter: parent.verticalCenter
@@ -154,9 +158,23 @@ Rectangle{
             monitormap.viewcar=mrbtncar.checked
         }
     }
+
+    Connections {
+        target: mrbtnmap
+        onClicked: {
+            file.editfile=selectbox.selectitem
+            monitormap.viewmap=mrbtnmap.checked
+        }
+    }
     Component.onCompleted: {
         monitormap.serial=manager;
         monitormap.file=file;
+    }
+    Connections {
+        target: selectbox
+        onEdited: {
+            file.editfile=msg;
+        }
     }
 }
 

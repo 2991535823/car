@@ -266,6 +266,7 @@ Rectangle{
             mctime.bcheak=true
             capture.stop();
             if(info){
+                file.editfile=mcselect.selectitem
                 file.doCmd(done)
             }else{
                 console.log("cancel")
@@ -278,6 +279,13 @@ Rectangle{
         onClicked: {
             capture.stop()
             createbox.open("数据点采集暂停，可以选择保存数据，或者继续")
+        }
+    }
+
+    Connections {
+        target: mcselect
+        onEdited: {
+            file.editfile=msg;
         }
     }
 }
