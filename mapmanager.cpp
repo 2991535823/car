@@ -23,9 +23,19 @@ void MapManager::paint(QPainter *painter)
     {
         painter->setPen(Qt::black);
         map=file2map();
-        for(auto &&i:map)
+        for(int i=0;i<map.size();i++)
         {
-            QLineF tem=transLine(i);
+            QLineF tem=transLine(map[i]);
+            painter->save();
+
+            if(i==map.size()-1){
+                painter->setWindow(-1*tem.p2().x(),-height()+tem.p2().y(),width(),height());
+                painter->drawText(QPointF(0,0),QString::number(i+1));
+            }else {
+                painter->setWindow(-1*tem.p1().x(),-height()+tem.p1().y(),width(),height());
+                painter->drawText(QPointF(0,0),QString::number(i));
+            }
+            painter->restore();
             painter->drawLine(tem);
         }
 
@@ -39,10 +49,10 @@ void MapManager::mousePressEvent(QMouseEvent *event)
 {
     switch (event->button()) {
     case Qt::LeftButton:
-//        line=QLineF(0,0,200,400);
+        //        line=QLineF(0,0,200,400);
         break;
     case Qt::RightButton:
-//        line=QLineF(0,0,400,200);
+        //        line=QLineF(0,0,400,200);
         break;
     default:
         break;
@@ -55,12 +65,12 @@ void MapManager::timerEvent(QTimerEvent *event)
     Q_UNUSED(event);
     _width=width();
     _height=height();
-//    qDebug()<<"width"<<_width<<"height"<<_height;
-//    if(carLocation.indexOf("$GPHCD"))
-//    {
-//        carPoint=QPointF(carLocation[12].toInt(),carLocation[13].toInt());
-//    }
-//    update();
+    //    qDebug()<<"width"<<_width<<"height"<<_height;
+    //    if(carLocation.indexOf("$GPHCD"))
+    //    {
+    //        carPoint=QPointF(carLocation[12].toInt(),carLocation[13].toInt());
+    //    }
+    //    update();
 }
 void MapManager::setserial(SerialManager *manager)
 {
@@ -97,9 +107,9 @@ QLineF MapManager::transLine(QLineF line)
     QPointF end=line.p2();
     float mapsizex=maplimit[0]-maplimit[2];
     float mapsizey=maplimit[1]-maplimit[3];
-    int scalex=width()/mapsizex;
+    int scalex=width()/(mapsizex+1);
     qDebug()<<width();
-    int scaley=height()/mapsizey;
+    int scaley=height()/(mapsizey+1);
     qreal x=start.x()-maplimit[2];
     qreal y=start.y()-maplimit[3];
     start =QPointF(x*scalex,y*scaley);
@@ -118,10 +128,8 @@ QVector<QLineF> MapManager::file2map()
     qDebug()<<_mapnode;
     QVector<QLineF> lineGroup;
     float x0,y0,x1,y1;
-    for (int j=0;j<4;j++) {
-        maplimit[j]=0;
-    }
     QStringList start,end;
+
     for (int i=0;i<_mapnode.size()-1;i++) {
         start=_mapnode[i].toString().split(',');
         x0=start[12].toFloat();
@@ -130,10 +138,17 @@ QVector<QLineF> MapManager::file2map()
         x1=end[12].toFloat();
         y1=end[13].toFloat();
         //有问题
-        maplimit[0]=qMax(maplimit[0],x0>x1?x0:x1);
-        maplimit[1]=qMax(maplimit[1],y0>y1?y0:y1);
-        maplimit[2]=qMin(maplimit[2],x0<x1?x0:x1);
-        maplimit[3]=qMin(maplimit[3],y0<y1?y0:y1);
+        if(i==0)
+        {
+            maplimit[0]=x0;
+            maplimit[1]=y0;
+            maplimit[2]=x0;
+            maplimit[3]=y0;
+        }
+        maplimit[0]=qMax(maplimit[0],x1);
+        maplimit[1]=qMax(maplimit[1],y1);
+        maplimit[2]=qMin(maplimit[2],x1);
+        maplimit[3]=qMin(maplimit[3],y1);
         lineGroup.insert(i,QLineF(x0,y0,x1,y1));
     }
     return lineGroup;
