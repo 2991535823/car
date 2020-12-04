@@ -92,6 +92,7 @@ bool SerialManager::serialConnect()
         port->setStopBits(QSerialPort::OneStop);
         port->setFlowControl(QSerialPort::NoFlowControl);
         connect(port,&QSerialPort::readyRead,this,&SerialManager::readSerial);
+        connectStatus=true;
         return true;
     }else {
         port->close();
@@ -102,6 +103,7 @@ bool SerialManager::serialConnect()
 bool SerialManager::serialDisconnect()
 {
     qDebug()<<"disconnect "+_com;
+    connectStatus=false;
     port->close();
     return true;
 }

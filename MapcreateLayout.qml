@@ -142,6 +142,7 @@ Rectangle{
                         Button {
                             id: mcviewbtn
                             width: parent.width*0.3
+                            checkable: true
                             text: qsTr("显示")
                         }
                     }
@@ -151,7 +152,7 @@ Rectangle{
                         height: parent.height-row1.height
                         Map{
                             anchors.fill: testmap
-                            anchors.margins: 15
+                            id:editmap
                         }
                     }
                 }
@@ -220,6 +221,17 @@ Rectangle{
             }
 
 
+        }
+    }
+    Component.onCompleted: {
+        editmap.file=file
+    }
+
+    Connections {
+        target: mcviewbtn
+        onClicked: {
+            file.editfile=mcselect.selectitem
+            editmap.viewmap=mcviewbtn.checked
         }
     }
     Connections{

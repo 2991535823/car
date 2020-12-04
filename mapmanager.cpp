@@ -3,7 +3,7 @@
 MapManager::MapManager(QQuickItem *parent):QQuickPaintedItem(parent)
 {
     setAcceptedMouseButtons(Qt::LeftButton|Qt::RightButton);
-    startTimer(1000);
+    startTimer(200);
 }
 
 
@@ -13,7 +13,7 @@ void MapManager::paint(QPainter *painter)
     painter->setWindow(0, height(),  width(), -1 * height());//坐标系变换
     if(_viewCar){
         painter->setPen(_pen);
-        painter->drawPoint(carPoint);
+        painter->drawPoint(transPoint(carPoint));
 
     }else
     {
@@ -63,20 +63,27 @@ void MapManager::mousePressEvent(QMouseEvent *event)
 void MapManager::timerEvent(QTimerEvent *event)
 {
     Q_UNUSED(event);
-    _width=width();
-    _height=height();
-    //    qDebug()<<"width"<<_width<<"height"<<_height;
-    //    if(carLocation.indexOf("$GPHCD"))
-    //    {
-    //        carPoint=QPointF(carLocation[12].toInt(),carLocation[13].toInt());
-    //    }
-    //    update();
+    //    _width=width();
+    //    _height=height();
+
+    if(_viewCar)
+    {
+        if(!carLocation.isEmpty())
+        {
+            carPoint=QPointF(carLocation[12].toInt(),carLocation[13].toInt());
+        }else {
+            carPoint=QPointF(0,0);
+        }
+
+        update();
+    }
+
 }
 void MapManager::setserial(SerialManager *manager)
 {
     _serial = manager;
     static int limit=0;
-    qDebug()<< "setserial:"<<limit;
+    qDebug()<< "set map serial :"<<limit;
     if(limit==0)
     {
         connect(_serial,&SerialManager::readDone,this,&MapManager::readSerial);
@@ -105,18 +112,18 @@ QLineF MapManager::transLine(QLineF line)
 {
     QPointF start=line.p1();
     QPointF end=line.p2();
+    return QLineF(transPoint(start),transPoint(end));
+}
+
+QPointF &MapManager::transPoint(QPointF &point)
+{
     float mapsizex=maplimit[0]-maplimit[2];
     float mapsizey=maplimit[1]-maplimit[3];
-    int scalex=width()/(mapsizex+1);
-    qDebug()<<width();
-    int scaley=height()/(mapsizey+1);
-    qreal x=start.x()-maplimit[2];
-    qreal y=start.y()-maplimit[3];
-    start =QPointF(x*scalex,y*scaley);
-    x=end.x()-maplimit[2];
-    y=end.y()-maplimit[3];
-    end =QPointF(x*scalex,y*scaley);
-    return QLineF(start,end);
+    int scalex=0.8*width()/(mapsizex);
+    int scaley=0.8*height()/(mapsizey);
+    point.setX((point.x()-maplimit[2])*scalex+0.1*width());
+    point.setY((point.y()-maplimit[3])*scaley+0.1*height());
+    return point;
 }
 
 
@@ -129,7 +136,6 @@ QVector<QLineF> MapManager::file2map()
     QVector<QLineF> lineGroup;
     float x0,y0,x1,y1;
     QStringList start,end;
-
     for (int i=0;i<_mapnode.size()-1;i++) {
         start=_mapnode[i].toString().split(',');
         x0=start[12].toFloat();
@@ -137,7 +143,6 @@ QVector<QLineF> MapManager::file2map()
         end=_mapnode[i+1].toString().split(',');
         x1=end[12].toFloat();
         y1=end[13].toFloat();
-        //有问题
         if(i==0)
         {
             maplimit[0]=x0;
@@ -159,5 +164,4 @@ QVector<QLineF> MapManager::file2map()
 void MapManager::readSerial(const QString msg)
 {
     carLocation=msg.split(',');
-    qDebug()<<carLocation;
 }

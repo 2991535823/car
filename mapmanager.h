@@ -26,6 +26,7 @@ private:
     void setviewcar(bool view);
     void setviewmap(bool view);
     QLineF transLine(QLineF line);
+    QPointF &transPoint(QPointF &point);
     QVector<QLineF> file2map();
     bool _viewCar=false;
     bool _viewMap=false;

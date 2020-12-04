@@ -27,13 +27,14 @@ public:
     Q_INVOKABLE void setParms(QString baudrate,QString com);
     Q_INVOKABLE bool sendMsg(QString msg,bool orNot16=false);
     Q_PROPERTY(QStringList ports READ getports NOTIFY portsupdata)
-
+    inline bool getStatus()const{return connectStatus;}
 private:
     bool carStart();
     bool carStop();
     bool carRestart();
     bool serialConnect();
     bool serialDisconnect();
+
     QByteArray String2Hex(QString &str);
     char ConvertHexChar(char ch);
     QStringList getports();
@@ -47,6 +48,7 @@ private:
     QByteArray dataRoom="";
     //存放16进制数据
     QByteArray _msg;
+    bool connectStatus=false;
 signals:
     void readDone(const QString msg);
     void portsupdata();
