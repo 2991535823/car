@@ -12,8 +12,10 @@ void MapManager::paint(QPainter *painter)
     painter->setRenderHint(QPainter::Antialiasing);
     painter->setWindow(0, height(),  width(), -1 * height());//坐标系变换
     if(_viewCar){
+        painter->save();
         painter->setPen(_pen);
         painter->drawPoint(transPoint(carPoint));
+        painter->restore();
 
     }else
     {
@@ -21,22 +23,32 @@ void MapManager::paint(QPainter *painter)
     }
     if(_viewMap)
     {
-        painter->setPen(Qt::black);
+
+
         map=file2map();
         for(int i=0;i<map.size();i++)
         {
+
             QLineF tem=transLine(map[i]);
+
+            painter->drawLine(tem);
+
             painter->save();
 
             if(i==map.size()-1){
+                painter->setPen(_pen);
                 painter->setWindow(-1*tem.p2().x(),-height()+tem.p2().y(),width(),height());
-                painter->drawText(QPointF(0,0),QString::number(i+1));
-            }else {
-                painter->setWindow(-1*tem.p1().x(),-height()+tem.p1().y(),width(),height());
-                painter->drawText(QPointF(0,0),QString::number(i));
+                painter->drawPoint(QPointF(0,0));
+                painter->setPen(Qt::SolidLine);
+                painter->drawText(QPointF(10,10),QString::number(i+2));
+
             }
+                painter->setPen(_pen);
+                painter->setWindow(-1*tem.p1().x(),-height()+tem.p1().y(),width(),height());
+                painter->drawPoint(QPointF(0,0));
+                painter->setPen(Qt::SolidLine);
+                painter->drawText(QPointF(10,10),QString::number(i+1));
             painter->restore();
-            painter->drawLine(tem);
         }
 
     }else {
