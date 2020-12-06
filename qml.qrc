@@ -14,5 +14,6 @@
     <qresource prefix="/img">
         <file>tab.png</file>
         <file>xndx.jpg</file>
+        <file>car.jpg</file>
     </qresource>
 </RCC>

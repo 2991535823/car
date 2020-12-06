@@ -6,7 +6,7 @@ Window {
     visible: true
     width: 1080
     height: width/16*9
-    title: qsTr("Control")
+    title: qsTr("自动导航人机交互系统")
     Serial{
         id:manager
     }

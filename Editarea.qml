@@ -28,7 +28,7 @@ FocusScope{
             enabled: editable
             text:_text
             anchors.verticalCenter: parent.verticalCenter
-            font.pointSize: 16
+            font.pointSize: 12
             color: editable?"black":"grey"
             width:parent.width-label.width
             font.family: "Tahoma"

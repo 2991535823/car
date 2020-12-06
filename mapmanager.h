@@ -28,18 +28,19 @@ private:
     QLineF transLine(QLineF line);
     QPointF &transPoint(QPointF &point);
     QVector<QLineF> file2map();
+    int calculationdistance(QPointF p1,QPointF p2);
     bool _viewCar=false;
     bool _viewMap=false;
-    int _width;
-    int _height;
+
     float maplimit[4];
-//    QLineF line=QLineF(0,0,100,100);
     QPointF carPoint=QPointF(50,100);
-    SerialManager *_serial;
-    FileManager *_file;
+    qreal cardirection=0;
+    SerialManager *_serial=nullptr;
+    FileManager *_file=nullptr;
     QStringList carLocation;
     QVector<QLineF> map;
-    QPen _pen=QPen(QBrush(Qt::SolidPattern),15);
+    QPen _pen=QPen(QBrush(Qt::SolidPattern),10);
+    QImage carimg;
 public slots:
     void readSerial(const QString msg);
     // QQuickPaintedItem interface
@@ -49,10 +50,13 @@ public:
     // QQuickItem interface
 protected:
     virtual void mousePressEvent(QMouseEvent *event) override;
-
+    virtual void mouseReleaseEvent(QMouseEvent *event) override;
     // QObject interface
 protected:
     virtual void timerEvent(QTimerEvent *event) override;
+
+    // QQuickItem interface
+
 };
 
 #endif // MAPMANAGER_H

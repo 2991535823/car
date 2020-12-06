@@ -38,12 +38,13 @@ Rectangle{
                     }
 
                     Selectbox {
+                        id:mrmapbackswitch
                         prompttext: "返航开关:"
                         promptmodel: ["开","关"]
                         width: parent.width
                     }
                     Selectbox {
-                        promptmodel: ["起点-终点","终点-起点","当前-终点","终点-起点"]
+                        promptmodel: ["起点-终点","终点-起点","当前-终点","终点-当前"]
                         width: parent.width
                         prompttext: qsTr("模式选择:")
                     }
@@ -174,6 +175,19 @@ Rectangle{
         target: selectbox
         onEdited: {
             file.editfile=msg;
+        }
+    }
+
+    Connections {
+        target: mrmapbackswitch
+        onEdited: {
+            if(msg===mrmapbackswitch.promptmodel[0])
+            {
+                manager.orNotBack=true;
+            }else
+            {
+                manager.orNotBack=false;
+            }
         }
     }
 }

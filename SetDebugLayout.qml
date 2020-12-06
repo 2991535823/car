@@ -56,6 +56,13 @@ Rectangle{
                         promptmodel: ["字符串","16进制"]
                     }
 
+                    Editarea {
+                        id: mappath
+                        width: parent.width
+                        prompttext: "地图路径:"
+                        text: "hello"
+                    }
+
                 }
 
                 Row {

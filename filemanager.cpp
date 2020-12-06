@@ -64,10 +64,18 @@ bool FileManager::setParms(QString filename)
     return true;
 }
 
-QJsonObject FileManager::getmap()
+void FileManager::createmap(QString filename)
 {
-    QString filename=_editfile.remove(".json");
-    qDebug()<<filename;
+    _filename=filename;
+    createFile(filename);
+}
+
+QJsonObject FileManager::getmap(QString filename)
+{
+    if(filename.indexOf(".json")!=-1)
+    {
+        filename.remove(".json");
+    }
     QJsonObject temp=readFile(filename);
     return  temp;
 }
@@ -84,7 +92,6 @@ bool FileManager::startCollection()
 {
 
     map.append(gpsData);
-
     return true;
 }
 

@@ -278,6 +278,7 @@ Rectangle{
             mctime.bcheak=true
             capture.stop();
             if(info){
+                file.createmap(mcname.text);
                 file.editfile=mcselect.selectitem
                 file.doCmd(done)
             }else{

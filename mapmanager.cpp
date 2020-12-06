@@ -4,17 +4,22 @@ MapManager::MapManager(QQuickItem *parent):QQuickPaintedItem(parent)
 {
     setAcceptedMouseButtons(Qt::LeftButton|Qt::RightButton);
     startTimer(200);
+//    carimg.load(QStringLiteral(":/img/car.jpg"));
+    carimg.load(QStringLiteral("E:/Desktop/car/car.jpg"));
 }
 
-
+//绘图
 void MapManager::paint(QPainter *painter)
 {
     painter->setRenderHint(QPainter::Antialiasing);
     painter->setWindow(0, height(),  width(), -1 * height());//坐标系变换
     if(_viewCar){
         painter->save();
-        painter->setPen(_pen);
-        painter->drawPoint(transPoint(carPoint));
+        QPointF tem=transPoint(carPoint);
+        painter->setWindow(-1*tem.x(),height()-tem.y(),width(), -1 * height());//小车车坐标系变换
+        painter->rotate(cardirection);
+        qDebug()<<cardirection<<"|"<<carPoint<<"|"<<carimg.width();
+        painter->drawImage(QPointF(-1*carimg.width()/2,-1*carimg.height()/2),carimg);
         painter->restore();
 
     }else
@@ -43,11 +48,11 @@ void MapManager::paint(QPainter *painter)
                 painter->drawText(QPointF(10,10),QString::number(i+2));
 
             }
-                painter->setPen(_pen);
-                painter->setWindow(-1*tem.p1().x(),-height()+tem.p1().y(),width(),height());
-                painter->drawPoint(QPointF(0,0));
-                painter->setPen(Qt::SolidLine);
-                painter->drawText(QPointF(10,10),QString::number(i+1));
+            painter->setPen(_pen);
+            painter->setWindow(-1*tem.p1().x(),-height()+tem.p1().y(),width(),height());
+            painter->drawPoint(QPointF(0,0));
+            painter->setPen(Qt::SolidLine);
+            painter->drawText(QPointF(10,10),QString::number(i+1));
             painter->restore();
         }
 
@@ -56,22 +61,46 @@ void MapManager::paint(QPainter *painter)
     }
 
 }
-
+//鼠标左右键处理
 void MapManager::mousePressEvent(QMouseEvent *event)
 {
+//    QPoint point=event->pos();
     switch (event->button()) {
     case Qt::LeftButton:
-        //        line=QLineF(0,0,200,400);
+    {
+
+    }
         break;
     case Qt::RightButton:
-        //        line=QLineF(0,0,400,200);
+    {
+
+    }
         break;
     default:
         break;
     }
-    update();
+//    update();
 }
 
+void MapManager::mouseReleaseEvent(QMouseEvent *event)
+{
+//    QPoint point=event->pos();
+    switch (event->button()) {
+    case Qt::LeftButton:
+    {
+
+    }
+        break;
+    case Qt::RightButton:
+    {
+
+    }
+        break;
+    default:
+        break;
+    }
+}
+//定时器
 void MapManager::timerEvent(QTimerEvent *event)
 {
     Q_UNUSED(event);
@@ -83,8 +112,11 @@ void MapManager::timerEvent(QTimerEvent *event)
         if(!carLocation.isEmpty())
         {
             carPoint=QPointF(carLocation[12].toInt(),carLocation[13].toInt());
+            cardirection=carLocation[5].toFloat();
+            //            qDebug()<<carLocation[5];
         }else {
             carPoint=QPointF(0,0);
+            cardirection=0;
         }
 
         update();
@@ -138,13 +170,11 @@ QPointF &MapManager::transPoint(QPointF &point)
     return point;
 }
 
-
-
 QVector<QLineF> MapManager::file2map()
 {
-    QJsonObject _map=_file->getmap();
+    QJsonObject _map=_file->getmap(_file->_editfile);//getmap接口应当重写
     QJsonArray _mapnode=_map["data"].toArray();
-    qDebug()<<_mapnode;
+
     QVector<QLineF> lineGroup;
     float x0,y0,x1,y1;
     QStringList start,end;
@@ -171,7 +201,11 @@ QVector<QLineF> MapManager::file2map()
     return lineGroup;
 }
 
-
+int MapManager::calculationdistance(QPointF p1, QPointF p2)
+{
+    int distance=(int(p1.x()-p2.x()))^2+(int(p1.y()-p2.y()))^2;
+    return distance;
+}
 
 void MapManager::readSerial(const QString msg)
 {
