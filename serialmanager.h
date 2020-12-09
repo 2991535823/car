@@ -7,6 +7,7 @@
 #include <QDebug>
 #include <QQmlEngine>
 #include <QJSEngine>
+#include "debugmanager.h"
 class SerialManager : public QObject
 {
     Q_OBJECT

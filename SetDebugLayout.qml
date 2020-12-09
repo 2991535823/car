@@ -60,7 +60,10 @@ Rectangle{
                         id: mappath
                         width: parent.width
                         prompttext: "地图路径:"
-                        text: "hello"
+                        text: file.mappath
+                        onEdited: {
+                           file.mappath=mappath.text
+                        }
                     }
 
                 }
@@ -217,21 +220,21 @@ Rectangle{
                                     id: carx
                                     width: parent.width
                                     prompttext: "X:"
-                                    _text:msdataon.checked?analysisMsg[12]:""
+                                    text:msdataon.checked?analysisMsg[12]:""
                                     editable: false
                                 }
                                 Editarea {
                                     id: cary
                                     width: parent.width
                                     prompttext: "Y:"
-                                    _text:msdataon.checked?analysisMsg[13]:""
+                                    text:msdataon.checked?analysisMsg[13]:""
                                     editable: false
                                 }
                                 Editarea {
                                     id: cayz
                                     width: parent.width
                                     prompttext: "Z:"
-                                    _text:msdataon.checked?analysisMsg[14]:""
+                                    text:msdataon.checked?analysisMsg[14]:""
                                     editable: false
                                 }
                             }
@@ -250,21 +253,21 @@ Rectangle{
                                     id: cargx
                                     width: parent.width
                                     prompttext: "经度:"
-                                    _text:msdataon.checked?analysisMsg[9]:""
+                                    text:msdataon.checked?analysisMsg[9]:""
                                     editable: false
                                 }
                                 Editarea {
                                     id: cargy
                                     width: parent.width
                                     prompttext: "维度:"
-                                    _text:msdataon.checked?analysisMsg[10]:""
+                                    text:msdataon.checked?analysisMsg[10]:""
                                     editable: false
                                 }
                                 Editarea {
                                     id: caygz
                                     width: parent.width
                                     prompttext: "高程:"
-                                    _text:msdataon.checked?analysisMsg[11]:""
+                                    text:msdataon.checked?analysisMsg[11]:""
                                     editable: false
                                 }
                             }
@@ -282,14 +285,14 @@ Rectangle{
                                     id: carcourse
                                     width: parent.width
                                     prompttext: "航向角:"
-                                    _text:msdataon.checked?analysisMsg[5]:""
+                                    text:msdataon.checked?analysisMsg[5]:""
                                     editable: false
                                 }
                                 Editarea {
                                     id: carpitch
                                     width: parent.width
                                     prompttext: "俯仰角:"
-                                    _text:msdataon.checked?analysisMsg[6]:""
+                                    text:msdataon.checked?analysisMsg[6]:""
                                     editable: false
                                 }
                             }
@@ -307,14 +310,14 @@ Rectangle{
                                     id: carsatellite
                                     width: parent.width
                                     prompttext: "解状态:"
-                                    _text:msdataon.checked?analysisMsg[15]:""
+                                    text:msdataon.checked?analysisMsg[15]:""
                                     editable: false
                                 }
                                 Editarea {
                                     id: carresult
                                     width: parent.width
                                     prompttext: "解有效性:"
-                                    _text:analysisresult?"有效":"无效"
+                                    text:analysisresult?"有效":"无效"
                                     editable: false
                                 }
                             }

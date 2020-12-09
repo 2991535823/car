@@ -5,7 +5,7 @@ FocusScope{
     id:root
     height: Math.max(Math.max(label.height,box.height),40)
     property string prompttext: "Text:"
-    property string _text: "wait edit"
+//    property string _text: "wait edit"
     property alias  text: box.text
     property bool editable: true
     signal edited()
@@ -26,7 +26,7 @@ FocusScope{
         TextInput{
             id:box
             enabled: editable
-            text:_text
+//            text:_text
             anchors.verticalCenter: parent.verticalCenter
             font.pointSize: 12
             color: editable?"black":"grey"

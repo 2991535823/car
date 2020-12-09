@@ -14,6 +14,7 @@ DEFINES += QT_DEPRECATED_WARNINGS
 #DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
 
 SOURCES += \
+        debugmanager.cpp \
         filemanager.cpp \
         main.cpp \
         mapmanager.cpp \
@@ -36,6 +37,7 @@ DISTFILES += \
     test.qmodel
 
 HEADERS += \
+    debugmanager.h \
     filemanager.h \
     mapmanager.h \
     serialmanager.h

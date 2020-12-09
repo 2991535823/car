@@ -2,7 +2,7 @@
 
 SerialManager::SerialManager(QObject *parent) : QObject(parent)
 {
-    qDebug()<<"Serial Manager create and start serialport scanning";
+    DebugManager::d("Serial Manager create and start serialport scanning");
     startTimer(5000);
     setports();
 }
@@ -11,7 +11,7 @@ SerialManager::~SerialManager()
 {
     delete port;
     delete info;
-    qDebug()<<"Serial Manger destory";
+    DebugManager::d("Serial Manger destory");
 }
 
 bool SerialManager::doCmd(Cmd cmd)
@@ -43,13 +43,12 @@ void SerialManager::setParms(QString baudrate, QString com)
 {
     _baudrate=baudrate;
     _com=com;
-    qDebug()<<_baudrate<<"|"<<_com;
+    DebugManager::d(_baudrate+"|"+_com);
 }
 
 bool SerialManager::sendMsg(QString msg,bool orNot16)
 {
     int code;
-    //有问题
     if(orNot16){
         _msg=String2Hex(msg);
     }else {
@@ -81,7 +80,7 @@ bool SerialManager::carRestart()
 
 bool SerialManager::serialConnect()
 {
-    qDebug()<<"connect "+_com;
+    DebugManager::d("connect "+_com);
     port->setPortName(_com);
     if(port->open(QIODevice::ReadWrite))
     {
@@ -101,7 +100,7 @@ bool SerialManager::serialConnect()
 
 bool SerialManager::serialDisconnect()
 {
-    qDebug()<<"disconnect "+_com;
+    DebugManager::d("disconnect "+_com);
     port->close();
     return true;
 }
@@ -126,7 +125,7 @@ void SerialManager::setports()
 void SerialManager::setOrNotBack(bool value)
 {
     _orNotBack=value;
-    qDebug()<<"返航开关:"<<_orNotBack;
+    DebugManager::d("返航开关:" +QString::number(_orNotBack));
 }
 
 
@@ -134,11 +133,13 @@ void SerialManager::readSerial()
 {
     static int elposition=0;
     dataRoom+=port->readLine();
+    DebugManager::w(dataRoom);
     for(auto &&i:dataRoom){
         if(i!='\n'){
             elposition++;
         }else {
             serialMsg=dataRoom.left(elposition+1);
+            DebugManager::i(serialMsg);
             dataRoom.remove(0,elposition+1);
             elposition=0;
             emit readDone(serialMsg);

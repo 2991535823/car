@@ -10,6 +10,7 @@
 #include "filemanager.h"
 #include <QPointF>
 #include <QBrush>
+#include "debugmanager.h"
 class MapManager:public QQuickPaintedItem
 {
     Q_OBJECT

@@ -3,20 +3,21 @@
 FileManager::FileManager(QObject *parent) : QObject(parent)
 {
     Q_UNUSED(parent)
+    MapFolder=getMapPath();
     if(!dir.exists(MapFolder)){
         dir.mkdir(MapFolder);
 
     }
     startTimer(500);
     setmaplist();
-    qDebug()<<"file manager create";
+    DebugManager::d("file manager create");
 }
 
 FileManager::~FileManager()
 {
     _file->close();
     delete _file;
-    qDebug()<<"file manager destory";
+    DebugManager::d("file manager destory");
 }
 
 bool FileManager::doCmd(FileManager::Cmd cmd)
@@ -82,7 +83,7 @@ QJsonObject FileManager::getmap(QString filename)
 
 void FileManager::seteditfile(QString name)
 {
-//    qDebug()<<name;
+    //    qDebug()<<name;
     _editfile=name;
 }
 
@@ -115,9 +116,9 @@ bool FileManager::deleteFile()
     return deletefile->remove();
 }
 
-QJsonObject FileManager::readFile(QString filename)
+QJsonObject FileManager::readFile(QString filename, QString suffix)
 {
-    _file=new QFile(MapFolder+filename+Suffix);
+    _file=new QFile(MapFolder+filename+suffix);
     QJsonParseError error;
     QJsonObject tempobj;
     QJsonDocument tempdoc;
@@ -144,9 +145,9 @@ int FileManager::getNodeSize()
     return _nodesize;
 }
 
-bool FileManager::writefile(QString filename, QJsonObject obj)
+bool FileManager::writefile(QString filename, QJsonObject obj, QString suffix)
 {
-    _file->setFileName(MapFolder+filename+Suffix);
+    _file->setFileName(MapFolder+filename+suffix);
     bool code=false;
     if(_file->exists()){
         if(_file->open(QIODevice::ReadWrite|QIODevice::Truncate))
@@ -162,10 +163,10 @@ bool FileManager::writefile(QString filename, QJsonObject obj)
     return code;
 }
 
-bool FileManager::createFile(QString filename)
+bool FileManager::createFile(QString filename, QString suffix)
 {
     bool code=false;
-    _file=new QFile(MapFolder+filename+Suffix);
+    _file=new QFile(MapFolder+filename+suffix);
     if(!_file->exists())
     {
         code=_file->open(QIODevice::ReadWrite|QIODevice::Text);
@@ -195,7 +196,7 @@ void FileManager::setserial(SerialManager *manager)
 {
     _serial = manager;
     static int limit=0;
-//    qDebug()<< "setserial:"<<limit;
+    //    qDebug()<< "setserial:"<<limit;
     if(limit==0)
     {
         connect(_serial,&SerialManager::readDone,this,&FileManager::readSerial);
@@ -221,6 +222,42 @@ bool FileManager::clearMapData()
         map.removeFirst();
     }
     return true;
+}
+
+QString FileManager::getMapPath()
+{
+    if(createFile("settings",".ini"))
+    {
+        //文件不存在
+        setMapPath(MapFolder);
+        return MapFolder;
+    }else {
+        QJsonObject temp=readFile("settings",".ini");
+        QJsonValue path=temp["mapfolder"];
+        return path.toString();
+    }
+}
+
+bool FileManager::setMapPath(QString MapPath)
+{
+    if(createFile("settings",".ini"))
+    {
+        //第一次创建
+        QJsonObject temp;
+        temp.insert("mapfolder",MapPath);
+        writefile("settings",temp,".ini");
+        emit mapPathUpdata();
+    }else {
+        QJsonObject temp=readFile("settings",".ini");
+        QJsonValue path=temp["mapfolder"];
+        if(path!=MapPath)
+        {
+           temp.insert("mapfolder",MapPath);
+           writefile("settings",temp,".ini");
+           emit mapPathUpdata();
+        }
+    }
+    return true;//不规范
 }
 
 void FileManager::readSerial(const QString msg)

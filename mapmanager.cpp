@@ -18,13 +18,13 @@ void MapManager::paint(QPainter *painter)
         QPointF tem=transPoint(carPoint);
         painter->setWindow(-1*tem.x(),height()-tem.y(),width(), -1 * height());//小车车坐标系变换
         painter->rotate(cardirection);
-        qDebug()<<cardirection<<"|"<<carPoint<<"|"<<carimg.width();
+        DebugManager::d(QString::number(cardirection)+"|"+QString::number(carPoint.x())+","+QString::number(carPoint.y())+"|"+QString::number(carimg.width()));
         painter->drawImage(QPointF(-1*carimg.width()/2,-1*carimg.height()/2),carimg);
         painter->restore();
 
     }else
     {
-        qDebug()<<"clear car";
+        DebugManager::d("clear car");
     }
     if(_viewMap)
     {
@@ -127,7 +127,7 @@ void MapManager::setserial(SerialManager *manager)
 {
     _serial = manager;
     static int limit=0;
-    qDebug()<< "set map serial :"<<limit;
+    DebugManager::d( "set map serial :"+QString::number(limit));
     if(limit==0)
     {
         connect(_serial,&SerialManager::readDone,this,&MapManager::readSerial);

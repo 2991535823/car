@@ -34,7 +34,7 @@ public:
     Q_PROPERTY(QString editfile WRITE seteditfile)
     Q_PROPERTY(SerialManager *serial WRITE setserial);
     Q_PROPERTY(int nodesize READ getNodeSize NOTIFY nodeSizeUpdata)
-//    Q_PROPERTY(QString mappath READ getMapPath WRITE getMapPath NOTIFY mapPathUpdata)
+    Q_PROPERTY(QString mappath READ getMapPath WRITE setMapPath NOTIFY mapPathUpdata)
     //选中编辑的地图,暴露接口
     QString _editfile;
     QJsonObject getmap(QString filename);
@@ -45,9 +45,9 @@ private:
 
     //文件的操作
     bool deleteFile();
-    QJsonObject readFile(QString filename);
-    bool writefile(QString filename,QJsonObject obj);
-    bool createFile(QString filename);
+    QJsonObject readFile(QString filename,QString suffix=".json");
+    bool writefile(QString filename,QJsonObject obj,QString suffix=".json");
+    bool createFile(QString filename,QString suffix=".json");
     //Q_PROPERTY
     QStringList getmaplist();
     int getNodeSize();
@@ -56,7 +56,8 @@ private:
     void setserial(SerialManager *manager);
     void setNodeSize();
     bool clearMapData();
-
+    QString getMapPath();
+    bool setMapPath(QString MapPath);
     //地图存放位置及文件格式
     QString MapFolder="E:/Map/";
     QString Suffix=".json";
@@ -81,6 +82,7 @@ private:
 signals:
     void maplistupdata();
     void nodeSizeUpdata();
+    void mapPathUpdata();
 public slots:
     void readSerial(const QString msg);
 
