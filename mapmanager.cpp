@@ -1,4 +1,4 @@
-#include "mapmanager.h"
+﻿#include "mapmanager.h"
 
 MapManager::MapManager(QQuickItem *parent):QQuickPaintedItem(parent)
 {
@@ -203,7 +203,9 @@ QVector<QLineF> MapManager::file2map()
 
 int MapManager::calculationdistance(QPointF p1, QPointF p2)
 {
-    int distance=(int(p1.x()-p2.x()))^2+(int(p1.y()-p2.y()))^2;
+    Q_UNUSED(p1)
+    Q_UNUSED(p2)
+    int distance=0;
     return distance;
 }
 

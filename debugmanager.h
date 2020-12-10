@@ -1,4 +1,4 @@
-#ifndef DEBUGMANAGER_H
+﻿#ifndef DEBUGMANAGER_H
 #define DEBUGMANAGER_H
 #include <QDebug>
 
@@ -20,7 +20,7 @@ private:
         WARN,
         ERROR
     };
-    static const int level=VERBOSE;
+    static const int level=NONE;
 };
 
 #endif // DEBUGMANAGER_H
