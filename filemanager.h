@@ -1,4 +1,4 @@
-#ifndef FILEMANAGER_H
+﻿#ifndef FILEMANAGER_H
 #define FILEMANAGER_H
 
 #include <QObject>
@@ -44,10 +44,11 @@ private:
     bool doneCollection();
 
     //文件的操作
-    bool deleteFile();
-    QJsonObject readFile(QString filename,QString suffix=".json");
-    bool writefile(QString filename,QJsonObject obj,QString suffix=".json");
-    bool createFile(QString filename,QString suffix=".json");
+    bool deleteFile(QString folder="C:/Map/");
+    QJsonObject readFile(QString filename,QString suffix=".json",QString folder="C:/Map/");
+    bool writefile(QString filename,QJsonObject obj,QString suffix=".json",QString folder="C:/Map/");
+    bool createFile(QString filename,QString suffix=".json",QString folder="C:/Map/");
+    bool createFolder(QString folder);
     //Q_PROPERTY
     QStringList getmaplist();
     int getNodeSize();
@@ -59,7 +60,8 @@ private:
     QString getMapPath();
     bool setMapPath(QString MapPath);
     //地图存放位置及文件格式
-    QString MapFolder="E:/Map/";
+    QString MapFolder="C:/Map/";
+    QString iniFolder="C:/.map/";
     QString Suffix=".json";
     //创建的地图名称
     QString _filename="default";

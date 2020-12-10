@@ -1,13 +1,16 @@
-#include "filemanager.h"
+﻿#include "filemanager.h"
 
 FileManager::FileManager(QObject *parent) : QObject(parent)
 {
     Q_UNUSED(parent)
-    MapFolder=getMapPath();
-    if(!dir.exists(MapFolder)){
-        dir.mkdir(MapFolder);
-
+    if(createFolder(iniFolder))
+    {
+        setMapPath(MapFolder);
     }
+
+    MapFolder=getMapPath();
+    DebugManager::v(MapFolder+"是目前的地图文件夹");
+    DebugManager::v(createFolder(MapFolder)?"地图文件夹创建":"地图文件夹存在");
     startTimer(500);
     setmaplist();
     DebugManager::d("file manager create");
@@ -56,19 +59,19 @@ bool FileManager::setParms(QString filename)
 
     QDateTime time=QDateTime::currentDateTime();
     if(fileExit){
-        jsonObject = readFile(filename);
+        jsonObject = readFile(filename,Suffix,MapFolder);
     }else {
-        createFile(filename);
+        createFile(filename,Suffix,MapFolder);
     }
     jsonObject.insert(filestatus,time.toString());
-    writefile(filename,jsonObject);
+    writefile(filename,jsonObject,Suffix,MapFolder);
     return true;
 }
 
 void FileManager::createmap(QString filename)
 {
     _filename=filename;
-    createFile(filename);
+    createFile(filename,Suffix,MapFolder);
 }
 
 QJsonObject FileManager::getmap(QString filename)
@@ -77,7 +80,7 @@ QJsonObject FileManager::getmap(QString filename)
     {
         filename.remove(".json");
     }
-    QJsonObject temp=readFile(filename);
+    QJsonObject temp=readFile(filename,Suffix,MapFolder);
     return  temp;
 }
 
@@ -103,22 +106,23 @@ bool FileManager::stopCollection()
 
 bool FileManager::doneCollection()
 {
-    QJsonObject jsonobj=readFile(_filename);
+    QJsonObject jsonobj=readFile(_filename,Suffix,MapFolder);
     jsonobj.insert("data",map);
-    writefile(_filename,jsonobj);
+    writefile(_filename,jsonobj,Suffix,MapFolder);
     clearMapData();
     return true;
 }
 
-bool FileManager::deleteFile()
+bool FileManager::deleteFile(QString folder)
 {
-    QFile *deletefile=new QFile(MapFolder+_editfile);
+    QFile *deletefile=new QFile(folder+_editfile);
     return deletefile->remove();
 }
 
-QJsonObject FileManager::readFile(QString filename, QString suffix)
+
+QJsonObject FileManager::readFile(QString filename, QString suffix, QString folder)
 {
-    _file=new QFile(MapFolder+filename+suffix);
+    _file=new QFile(folder+filename+suffix);
     QJsonParseError error;
     QJsonObject tempobj;
     QJsonDocument tempdoc;
@@ -135,19 +139,10 @@ QJsonObject FileManager::readFile(QString filename, QString suffix)
     return tempobj;
 }
 
-QStringList FileManager::getmaplist()
-{
-    return _maplist;
-}
 
-int FileManager::getNodeSize()
+bool FileManager::writefile(QString filename, QJsonObject obj, QString suffix, QString folder)
 {
-    return _nodesize;
-}
-
-bool FileManager::writefile(QString filename, QJsonObject obj, QString suffix)
-{
-    _file->setFileName(MapFolder+filename+suffix);
+    _file->setFileName(folder+filename+suffix);
     bool code=false;
     if(_file->exists()){
         if(_file->open(QIODevice::ReadWrite|QIODevice::Truncate))
@@ -163,14 +158,35 @@ bool FileManager::writefile(QString filename, QJsonObject obj, QString suffix)
     return code;
 }
 
-bool FileManager::createFile(QString filename, QString suffix)
+QStringList FileManager::getmaplist()
+{
+    return _maplist;
+}
+
+int FileManager::getNodeSize()
+{
+    return _nodesize;
+}
+
+bool FileManager::createFile(QString filename, QString suffix, QString folder)
 {
     bool code=false;
-    _file=new QFile(MapFolder+filename+suffix);
+    _file=new QFile(folder+filename+suffix);
     if(!_file->exists())
     {
         code=_file->open(QIODevice::ReadWrite|QIODevice::Text);
         _file->close();
+    }
+    return code;
+}
+
+
+bool FileManager::createFolder(QString folder)
+{
+    bool code=false;
+    if(!dir.exists(folder)){
+        dir.mkdir(folder);
+        code=true;
     }
     return code;
 }
@@ -226,13 +242,13 @@ bool FileManager::clearMapData()
 
 QString FileManager::getMapPath()
 {
-    if(createFile("settings",".ini"))
+    if(createFile("settings",".ini",iniFolder))
     {
-        //文件不存在
+        DebugManager::d("配置文件夹不存在,开始进行设置......");
         setMapPath(MapFolder);
         return MapFolder;
     }else {
-        QJsonObject temp=readFile("settings",".ini");
+        QJsonObject temp=readFile("settings",".ini",iniFolder);
         QJsonValue path=temp["mapfolder"];
         return path.toString();
     }
@@ -240,20 +256,21 @@ QString FileManager::getMapPath()
 
 bool FileManager::setMapPath(QString MapPath)
 {
-    if(createFile("settings",".ini"))
+    MapPath.remove("file:///");
+    if(createFile("settings",".ini",iniFolder))
     {
         //第一次创建
         QJsonObject temp;
         temp.insert("mapfolder",MapPath);
-        writefile("settings",temp,".ini");
+        writefile("settings",temp,".ini",iniFolder);
         emit mapPathUpdata();
     }else {
-        QJsonObject temp=readFile("settings",".ini");
+        QJsonObject temp=readFile("settings",".ini",iniFolder);
         QJsonValue path=temp["mapfolder"];
         if(path!=MapPath)
         {
            temp.insert("mapfolder",MapPath);
-           writefile("settings",temp,".ini");
+           writefile("settings",temp,".ini",iniFolder);
            emit mapPathUpdata();
         }
     }

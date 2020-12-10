@@ -1,4 +1,4 @@
-import QtQuick 2.0
+﻿import QtQuick 2.0
 import QtQuick.Controls 2.5
 
 FocusScope{
@@ -9,6 +9,7 @@ FocusScope{
     property alias  text: box.text
     property bool editable: true
     signal edited()
+    signal actived()
 
     Row {
         id: row
@@ -22,10 +23,12 @@ FocusScope{
             anchors.verticalCenter: parent.verticalCenter
             font.family: "Tahoma"
             font.pixelSize: 16
+
         }
         TextInput{
             id:box
             enabled: editable
+
 //            text:_text
             anchors.verticalCenter: parent.verticalCenter
             font.pointSize: 12
@@ -33,6 +36,10 @@ FocusScope{
             width:parent.width-label.width
             font.family: "Tahoma"
             focus: true
+            onActiveFocusOnPressChanged: {
+                root.actived()
+            }
+
             onAccepted: {
                 root.edited()
             }

@@ -1,6 +1,7 @@
-import QtQuick 2.0
+﻿import QtQuick 2.0
 import QtQuick.Controls 2.13
 import SerialManager 1.0
+import Qt.labs.platform 1.1
 Rectangle{
     id: root
     property int serialConnect: 3
@@ -60,10 +61,17 @@ Rectangle{
                         id: mappath
                         width: parent.width
                         prompttext: "地图路径:"
+                        editable: false
                         text: file.mappath
-                        onEdited: {
-                           file.mappath=mappath.text
-                        }
+                    }
+                    Button{
+                        width: parent.width
+                        text: "修改地图路径"
+                        ToolTip.delay: 1000
+                        ToolTip.timeout: 5000
+                        ToolTip.visible: hovered
+                        ToolTip.text: qsTr("重启后生效")
+                        onClicked: folderDialog.open()
                     }
 
                 }
@@ -264,7 +272,7 @@ Rectangle{
                                     editable: false
                                 }
                                 Editarea {
-                                    id: caygz
+                                    id: cargz
                                     width: parent.width
                                     prompttext: "高程:"
                                     text:msdataon.checked?analysisMsg[11]:""
@@ -329,7 +337,14 @@ Rectangle{
         }
 
     }
-
+    FolderDialog {
+        id: folderDialog
+        currentFolder: "file:///"+file.mappath//要求
+        options :FolderDialog.ReadOnly
+        onAccepted: {
+            file.mappath=folderDialog.currentFolder
+        }
+    }
     Connections {
         target: msconnet
         onClicked: {
@@ -388,7 +403,7 @@ Rectangle{
         {
             a=a ^ data[i].charCodeAt();
         }
-        var c=parseInt( data.slice(-4),16)
+        var c=parseInt( data.slice(-4),16);
         analysisresult= (a=== parseInt(data.slice(-4),16))
     }
 }
