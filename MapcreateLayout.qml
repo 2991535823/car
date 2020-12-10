@@ -1,4 +1,4 @@
-import QtQuick 2.0
+﻿import QtQuick 2.0
 import QtQuick.Controls 2.13
 import Qt.labs.platform 1.0
 import MapManager 1.0
@@ -266,8 +266,13 @@ Rectangle{
         target: button
         onClicked: {
             savebox.options=true
-            savebox.open("是否保存采集点数据到"+mcname.text+".json文件中?")
-
+            if(file.maplist.indexOf(mcname.text+".json")===-1)
+            {
+              savebox.open("是否保存采集点数据到"+mcname.text+".json文件中?")
+            }else
+            {
+              savebox.open("是否覆盖"+mcname.text+".json地图中的数据?")
+            }
         }
     }
 

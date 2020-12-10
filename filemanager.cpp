@@ -257,6 +257,7 @@ QString FileManager::getMapPath()
 bool FileManager::setMapPath(QString MapPath)
 {
     MapPath.remove("file:///");
+    MapPath.append('/');
     if(createFile("settings",".ini",iniFolder))
     {
         //第一次创建

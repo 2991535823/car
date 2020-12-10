@@ -382,8 +382,6 @@ Rectangle{
             {
                 analysisMsg=msg.split(',')
             }
-
-
             analysisdata(msg);
         }
     }
