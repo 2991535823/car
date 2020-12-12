@@ -18,6 +18,13 @@ FileManager::FileManager(QObject *parent) : QObject(parent)
 
 FileManager::~FileManager()
 {
+    if(!createFile("carlog",".log",MapFolder))
+    {
+        QJsonObject temp;
+        temp.insert("creat",QDateTime::currentDateTime().toString());
+        temp.insert("log",logarray);
+        writefile("carlog",temp,".log",MapFolder);
+    }
     _file->close();
     delete _file;
     DebugManager::d("file manager destory");
@@ -38,7 +45,7 @@ bool FileManager::doCmd(FileManager::Cmd cmd)
         code=doneCollection();
         break;
     case Delete:
-        code=deleteFile(MapFolder);
+        code=deleteFile(_editfile,MapFolder);
         break;
     default:
         break;
@@ -86,7 +93,6 @@ QJsonObject FileManager::getmap(QString filename)
 
 void FileManager::seteditfile(QString name)
 {
-    //    qDebug()<<name;
     _editfile=name;
 }
 
@@ -96,7 +102,7 @@ bool FileManager::startCollection()
 {
     if(DataCheck::checkFormat(gpsData))
     {
-        if(map.last()!=gpsData/*&&DataCheck::checkEffect(gpsData)*/)
+        if(map.last()!=gpsData&&DataCheck::checkEffect(gpsData))
         {
             map.append(gpsData);
             return true;
@@ -127,19 +133,12 @@ bool FileManager::doneCollection()
 
 void FileManager::writeLog(QString data)
 {
-    QJsonObject temp;
-    static QJsonArray logarray;
     logarray.append(data);
-    if(!createFile("carlog",".log",MapFolder))
-    {
-        temp.insert("log",logarray);
-        writefile("carlog",temp,".log",MapFolder);
-    }
 }
 
-bool FileManager::deleteFile(QString folder)
+bool FileManager::deleteFile(QString filename, QString folder)
 {
-    QFile *deletefile=new QFile(folder+_editfile);
+    QFile *deletefile=new QFile(folder+filename);
     return deletefile->remove();
 }
 

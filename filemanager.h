@@ -46,7 +46,7 @@ private:
     bool doneCollection();
     void writeLog(QString data);
     //文件的操作
-    bool deleteFile(QString folder="C:/Map/");
+    bool deleteFile(QString filename,QString folder="C:/Map/");
     QJsonObject readFile(QString filename,QString suffix=".json",QString folder="C:/Map/");
     bool writefile(QString filename,QJsonObject obj,QString suffix=".json",QString folder="C:/Map/");
     bool createFile(QString filename,QString suffix=".json",QString folder="C:/Map/");
@@ -76,14 +76,15 @@ private:
 
     QString createtime;
 
-    const QString className="filemanager debug:";
     //gps数据
     QString gpsData;
     //串口对象
     SerialManager *_serial=nullptr;
+
+
     QJsonArray map;
+    QJsonArray logarray;
     int _nodesize=0;
-    const QRegExp regular=QRegExp("^(\\$GPHCD)\\S+(\\r\\n)$");
 signals:
     void maplistupdata();
     void nodeSizeUpdata();

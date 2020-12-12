@@ -67,10 +67,10 @@ Rectangle{
                     Button{
                         width: parent.width
                         text: "修改地图路径"
-                        ToolTip.delay: 1000
+                        ToolTip.delay: 100
                         ToolTip.timeout: 5000
                         ToolTip.visible: hovered
-                        ToolTip.text: qsTr("重启后生效")
+                        ToolTip.text: qsTr("软件重启后生效")
                         onClicked: folderDialog.open()
                     }
 
@@ -396,8 +396,8 @@ Rectangle{
         }
     }
     function analysisdata(data){
-        var a=data[0].charCodeAt();
-        for(var i=1;i<data.length-4;i++)
+        var a=data[1].charCodeAt();
+        for(var i=2;i<data.length-5;i++)
         {
             a=a ^ data[i].charCodeAt();
         }
