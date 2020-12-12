@@ -38,7 +38,7 @@ bool FileManager::doCmd(FileManager::Cmd cmd)
         code=doneCollection();
         break;
     case Delete:
-        code=deleteFile();
+        code=deleteFile(MapFolder);
         break;
     default:
         break;
@@ -94,9 +94,21 @@ void FileManager::seteditfile(QString name)
 
 bool FileManager::startCollection()
 {
+    if(DataCheck::checkFormat(gpsData))
+    {
+        if(map.last()!=gpsData/*&&DataCheck::checkEffect(gpsData)*/)
+        {
+            map.append(gpsData);
+            return true;
+        }else {
+            DebugManager::i("小车位置没有变动,或校验位出错,采集停止");
+        }
+    }else {
+        QMessageBox::information(NULL, "提示信息", "地图数据不符合要求,请检查串口！",
+                                 QMessageBox::Yes);
+    }
 
-    map.append(gpsData);
-    return true;
+    return false;
 }
 
 bool FileManager::stopCollection()
@@ -111,6 +123,18 @@ bool FileManager::doneCollection()
     writefile(_filename,jsonobj,Suffix,MapFolder);
     clearMapData();
     return true;
+}
+
+void FileManager::writeLog(QString data)
+{
+    QJsonObject temp;
+    static QJsonArray logarray;
+    logarray.append(data);
+    if(!createFile("carlog",".log",MapFolder))
+    {
+        temp.insert("log",logarray);
+        writefile("carlog",temp,".log",MapFolder);
+    }
 }
 
 bool FileManager::deleteFile(QString folder)
@@ -270,9 +294,9 @@ bool FileManager::setMapPath(QString MapPath)
         QJsonValue path=temp["mapfolder"];
         if(path!=MapPath)
         {
-           temp.insert("mapfolder",MapPath);
-           writefile("settings",temp,".ini",iniFolder);
-           emit mapPathUpdata();
+            temp.insert("mapfolder",MapPath);
+            writefile("settings",temp,".ini",iniFolder);
+            emit mapPathUpdata();
         }
     }
     return true;//不规范
@@ -281,6 +305,7 @@ bool FileManager::setMapPath(QString MapPath)
 void FileManager::readSerial(const QString msg)
 {
     gpsData=msg;
+    writeLog(msg);
 }
 
 void FileManager::timerEvent(QTimerEvent *event)

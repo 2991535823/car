@@ -1,4 +1,4 @@
-#ifndef SERIALMANAGER_H
+﻿#ifndef SERIALMANAGER_H
 #define SERIALMANAGER_H
 
 #include <QObject>
@@ -8,6 +8,7 @@
 #include <QQmlEngine>
 #include <QJSEngine>
 #include "debugmanager.h"
+#include "datacheck.h"
 class SerialManager : public QObject
 {
     Q_OBJECT
@@ -23,7 +24,6 @@ public:
         SerialConnect=3,
         SerialDisconnect=4
     };
-
     Q_INVOKABLE bool doCmd(Cmd cmd);
     Q_INVOKABLE void setParms(QString baudrate,QString com);
     Q_INVOKABLE bool sendMsg(QString msg,bool orNot16=false);
@@ -51,6 +51,7 @@ private:
     //存放16进制数据
     QByteArray _msg;
     bool _orNotBack=false;
+
 signals:
     void readDone(const QString msg);
     void portsupdata();

@@ -216,37 +216,29 @@ Rectangle{
                             height: msxyz.textsize
                         }
                         Flowrec {
-                            id: msxyz
+                            id: msreliable
                             width: parent.width
-                            height: 140
-                            _text:"平面坐标"
+                            height: 100
                             textsize: 10
+                            _text:"解算质量"
                             Column{
                                 anchors.fill: parent
                                 anchors.margins: 10
                                 Editarea {
-                                    id: carx
+                                    id: carsatellite
                                     width: parent.width
-                                    prompttext: "X:"
-                                    text:msdataon.checked?analysisMsg[12]:""
+                                    prompttext: "解状态:"
+                                    text:msdataon.checked?analysisMsg[15]:""
                                     editable: false
                                 }
                                 Editarea {
-                                    id: cary
+                                    id: carresult
                                     width: parent.width
-                                    prompttext: "Y:"
-                                    text:msdataon.checked?analysisMsg[13]:""
-                                    editable: false
-                                }
-                                Editarea {
-                                    id: cayz
-                                    width: parent.width
-                                    prompttext: "Z:"
-                                    text:msdataon.checked?analysisMsg[14]:""
+                                    prompttext: "解有效性:"
+                                    text:analysisresult?"有效":"无效"
                                     editable: false
                                 }
                             }
-
                         }
                         Flowrec {
                             id: msglobal
@@ -306,29 +298,37 @@ Rectangle{
                             }
                         }
                         Flowrec {
-                            id: msreliable
+                            id: msxyz
                             width: parent.width
-                            height: 100
+                            height: 140
+                            _text:"平面坐标"
                             textsize: 10
-                            _text:"解算质量"
                             Column{
                                 anchors.fill: parent
                                 anchors.margins: 10
                                 Editarea {
-                                    id: carsatellite
+                                    id: carx
                                     width: parent.width
-                                    prompttext: "解状态:"
-                                    text:msdataon.checked?analysisMsg[15]:""
+                                    prompttext: "X:"
+                                    text:msdataon.checked?analysisMsg[12]:""
                                     editable: false
                                 }
                                 Editarea {
-                                    id: carresult
+                                    id: cary
                                     width: parent.width
-                                    prompttext: "解有效性:"
-                                    text:analysisresult?"有效":"无效"
+                                    prompttext: "Y:"
+                                    text:msdataon.checked?analysisMsg[13]:""
+                                    editable: false
+                                }
+                                Editarea {
+                                    id: cayz
+                                    width: parent.width
+                                    prompttext: "Z:"
+                                    text:msdataon.checked?analysisMsg[14]:""
                                     editable: false
                                 }
                             }
+
                         }
                     }
                 }

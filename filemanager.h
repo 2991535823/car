@@ -10,7 +10,9 @@
 #include <QDir>
 #include "serialmanager.h"
 #include <QDateTime>
+#include <QRegExp>
 #include <QMessageBox>
+#include "datacheck.h"
 class FileManager : public QObject
 {
     Q_OBJECT
@@ -42,7 +44,7 @@ private:
     bool startCollection();
     bool stopCollection();
     bool doneCollection();
-
+    void writeLog(QString data);
     //文件的操作
     bool deleteFile(QString folder="C:/Map/");
     QJsonObject readFile(QString filename,QString suffix=".json",QString folder="C:/Map/");
@@ -81,6 +83,7 @@ private:
     SerialManager *_serial=nullptr;
     QJsonArray map;
     int _nodesize=0;
+    const QRegExp regular=QRegExp("^(\\$GPHCD)\\S+(\\r\\n)$");
 signals:
     void maplistupdata();
     void nodeSizeUpdata();

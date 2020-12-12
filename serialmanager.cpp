@@ -1,4 +1,4 @@
-#include "serialmanager.h"
+﻿#include "serialmanager.h"
 
 SerialManager::SerialManager(QObject *parent) : QObject(parent)
 {
@@ -132,13 +132,15 @@ void SerialManager::setOrNotBack(bool value)
 void SerialManager::readSerial()
 {
     static int elposition=0;
-    dataRoom+=port->readLine();
+    dataRoom+=port->readLine(500);
     DebugManager::w(dataRoom);
     for(auto &&i:dataRoom){
         if(i!='\n'){
             elposition++;
         }else {
+
             serialMsg=dataRoom.left(elposition+1);
+            DataCheck::checkFormat(serialMsg);
             DebugManager::i(serialMsg);
             dataRoom.remove(0,elposition+1);
             elposition=0;

@@ -1,4 +1,5 @@
-#include "debugmanager.h"
+﻿#include "debugmanager.h"
+
 
 void DebugManager::v(QString msg)
 {

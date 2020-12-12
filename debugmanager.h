@@ -1,7 +1,6 @@
 ﻿#ifndef DEBUGMANAGER_H
 #define DEBUGMANAGER_H
 #include <QDebug>
-
 class DebugManager:public QDebug
 {
 
@@ -20,7 +19,7 @@ private:
         WARN,
         ERROR
     };
-    static const int level=NONE;
+    static const int level=INFO;
 };
 
 #endif // DEBUGMANAGER_H

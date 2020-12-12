@@ -180,11 +180,11 @@ QVector<QLineF> MapManager::file2map()
     QStringList start,end;
     for (int i=0;i<_mapnode.size()-1;i++) {
         start=_mapnode[i].toString().split(',');
-        x0=start[12].toFloat();
-        y0=start[13].toFloat();
+        x0=start[9].toFloat();
+        y0=start[10].toFloat();
         end=_mapnode[i+1].toString().split(',');
-        x1=end[12].toFloat();
-        y1=end[13].toFloat();
+        x1=end[9].toFloat();
+        y1=end[10].toFloat();
         if(i==0)
         {
             maplimit[0]=x0;
