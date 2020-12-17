@@ -9,6 +9,7 @@
 #include <QJSEngine>
 #include "debugmanager.h"
 #include "datacheck.h"
+#include "cmdmanager.h"
 class SerialManager : public QObject
 {
     Q_OBJECT
@@ -17,18 +18,19 @@ public:
 
     explicit SerialManager(QObject *parent = nullptr);
     ~SerialManager();
-    enum Cmd{
+    enum class Cmd{
         CarStart=0,
         CarStop=1,
         CarResatrt=2,
         SerialConnect=3,
         SerialDisconnect=4
     };
+    friend bool CmdManager::send(SerialManager *manager,QString msg);
     Q_INVOKABLE bool doCmd(Cmd cmd);
     Q_INVOKABLE void setParms(QString baudrate,QString com);
     Q_INVOKABLE bool sendMsg(QString msg,bool orNot16=false);
     Q_PROPERTY(QStringList ports READ getports NOTIFY portsupdata)
-    Q_PROPERTY(bool orNotBack WRITE setOrNotBack);
+
 private:
     bool carStart();
     bool carStop();
@@ -40,7 +42,7 @@ private:
     char ConvertHexChar(char ch);
     QStringList getports();
     void setports();
-    void setOrNotBack(bool value);
+
     QStringList _ports;
     QString serialMsg;
     QString _baudrate=NULL;

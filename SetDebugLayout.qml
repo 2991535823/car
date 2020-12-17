@@ -356,6 +356,8 @@ Rectangle{
                 manager.setParms(selectbaudrate.selectitem,selectcom.selectitem);
 
                 manager.doCmd(serialConnect);
+//                console.log(serialConnect)
+//                manager.doCmd(manager.SerialConnect)
 
             }else{
                 manager.doCmd(serialDisconnect);

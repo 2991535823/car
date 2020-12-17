@@ -51,6 +51,7 @@ Rectangle{
                 }
 
                 Button{
+                    id: mrbtnload
                     x: 9
                     y: 146
                     width: mrc.width
@@ -183,11 +184,18 @@ Rectangle{
         onEdited: {
             if(msg===mrmapbackswitch.promptmodel[0])
             {
-                manager.orNotBack=true;
+                cmd.orNotBack=true;
             }else
             {
-                manager.orNotBack=false;
+                cmd.orNotBack=false;
             }
+        }
+    }
+
+    Connections {
+        target: mrbtnload
+        onClicked: {
+            cmd.sendtostm32(manager);
         }
     }
 }

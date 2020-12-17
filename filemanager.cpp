@@ -18,6 +18,7 @@ FileManager::FileManager(QObject *parent) : QObject(parent)
 
 FileManager::~FileManager()
 {
+    //写入日志
     if(!createFile("carlog",".log",MapFolder))
     {
         QJsonObject temp;
@@ -55,7 +56,7 @@ bool FileManager::doCmd(FileManager::Cmd cmd)
 
 bool FileManager::setParms(QString filename)
 {
-    //正则校验
+    //创建一个地图
     _filename=filename;
     clearMapData();
     QJsonObject jsonObject;
@@ -80,7 +81,7 @@ void FileManager::createmap(QString filename)
     _filename=filename;
     createFile(filename,Suffix,MapFolder);
 }
-
+//开放给MapManager的接口
 QJsonObject FileManager::getmap(QString filename)
 {
     if(filename.indexOf(".json")!=-1)
@@ -90,19 +91,19 @@ QJsonObject FileManager::getmap(QString filename)
     QJsonObject temp=readFile(filename,Suffix,MapFolder);
     return  temp;
 }
-
+//设置编辑的地图
 void FileManager::seteditfile(QString name)
 {
     _editfile=name;
 }
 
 
-
+//采集一个地图点数据
 bool FileManager::startCollection()
 {
-    if(DataCheck::checkFormat(gpsData))
+    if(DataCheck::checkFormat(gpsData))//正则校验
     {
-        if(map.last()!=gpsData&&DataCheck::checkEffect(gpsData))
+        if(map.last()!=gpsData&&DataCheck::checkEffect(gpsData))//有效性校验
         {
             map.append(gpsData);
             return true;
@@ -113,15 +114,19 @@ bool FileManager::startCollection()
         QMessageBox::information(NULL, "提示信息", "地图数据不符合要求,请检查串口！",
                                  QMessageBox::Yes);
     }
-
     return false;
 }
 
 bool FileManager::stopCollection()
 {
+    if(map.size()>0)
+    {
+        map.pop_back();
+    }
+
     return true;
 }
-
+//完成采集。写入数据
 bool FileManager::doneCollection()
 {
     QJsonObject jsonobj=readFile(_filename,Suffix,MapFolder);
@@ -130,19 +135,19 @@ bool FileManager::doneCollection()
     clearMapData();
     return true;
 }
-
+//写日志
 void FileManager::writeLog(QString data)
 {
     logarray.append(data);
 }
-
+//删除文件
 bool FileManager::deleteFile(QString filename, QString folder)
 {
     QFile *deletefile=new QFile(folder+filename);
     return deletefile->remove();
 }
 
-
+//读文件内容
 QJsonObject FileManager::readFile(QString filename, QString suffix, QString folder)
 {
     _file=new QFile(folder+filename+suffix);
@@ -162,7 +167,7 @@ QJsonObject FileManager::readFile(QString filename, QString suffix, QString fold
     return tempobj;
 }
 
-
+//写文件
 bool FileManager::writefile(QString filename, QJsonObject obj, QString suffix, QString folder)
 {
     _file->setFileName(folder+filename+suffix);
@@ -180,17 +185,17 @@ bool FileManager::writefile(QString filename, QJsonObject obj, QString suffix, Q
     }
     return code;
 }
-
+//得到地图List
 QStringList FileManager::getmaplist()
 {
     return _maplist;
 }
-
+//得到采集的地图点
 int FileManager::getNodeSize()
 {
     return _nodesize;
 }
-
+//创建文件
 bool FileManager::createFile(QString filename, QString suffix, QString folder)
 {
     bool code=false;
@@ -203,7 +208,7 @@ bool FileManager::createFile(QString filename, QString suffix, QString folder)
     return code;
 }
 
-
+//创建文件
 bool FileManager::createFolder(QString folder)
 {
     bool code=false;
@@ -213,7 +218,7 @@ bool FileManager::createFolder(QString folder)
     }
     return code;
 }
-
+//更新地图列表信息
 void FileManager::setmaplist()
 {
     QDir dir(MapFolder);
@@ -230,7 +235,7 @@ void FileManager::setmaplist()
         emit maplistupdata();
     }
 }
-
+//设置该类的Serial的对象
 void FileManager::setserial(SerialManager *manager)
 {
     _serial = manager;
@@ -242,7 +247,7 @@ void FileManager::setserial(SerialManager *manager)
     }
     limit++;
 }
-
+//设置采集数据的个数
 void FileManager::setNodeSize()
 {
     if(_nodesize!=map.size())
@@ -252,7 +257,7 @@ void FileManager::setNodeSize()
     }
 
 }
-
+//清楚地图数据
 bool FileManager::clearMapData()
 {
     int length=map.size();
@@ -262,7 +267,7 @@ bool FileManager::clearMapData()
     }
     return true;
 }
-
+//得到地图文件存放的路径
 QString FileManager::getMapPath()
 {
     if(createFile("settings",".ini",iniFolder))
@@ -276,9 +281,10 @@ QString FileManager::getMapPath()
         return path.toString();
     }
 }
-
+//设置地图文件存放的路径
 bool FileManager::setMapPath(QString MapPath)
 {
+    //这两行代码重要
     MapPath.remove("file:///");
     MapPath.append('/');
     if(createFile("settings",".ini",iniFolder))
@@ -300,13 +306,13 @@ bool FileManager::setMapPath(QString MapPath)
     }
     return true;//不规范
 }
-
+//槽函数
 void FileManager::readSerial(const QString msg)
 {
     gpsData=msg;
     writeLog(msg);
 }
-
+//重写事件
 void FileManager::timerEvent(QTimerEvent *event)
 {
     Q_UNUSED(event)

@@ -14,6 +14,7 @@ DEFINES += QT_DEPRECATED_WARNINGS
 #DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
 
 SOURCES += \
+        cmdmanager.cpp \
         datacheck.cpp \
         debugmanager.cpp \
         filemanager.cpp \
@@ -22,7 +23,7 @@ SOURCES += \
         serialmanager.cpp
 
 RESOURCES += qml.qrc
-
+RC_ICONS = icon.ico
 # Additional import path used to resolve QML modules in Qt Creator's code model
 QML_IMPORT_PATH =
 
@@ -38,6 +39,7 @@ DISTFILES += \
     test.qmodel
 
 HEADERS += \
+    cmdmanager.h \
     datacheck.h \
     debugmanager.h \
     filemanager.h \

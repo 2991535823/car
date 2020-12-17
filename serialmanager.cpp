@@ -18,19 +18,19 @@ bool SerialManager::doCmd(Cmd cmd)
 {
     bool code=false;
     switch (cmd) {
-    case CarStart:
+    case Cmd::CarStart:
         code=carStart();
         break;
-    case CarStop:
+    case Cmd::CarStop:
         code=carStop();
         break;
-    case CarResatrt:
+    case Cmd::CarResatrt:
         code=carRestart();
         break;
-    case SerialConnect:
+    case Cmd::SerialConnect:
         code=serialConnect();
         break;
-    case SerialDisconnect:
+    case Cmd::SerialDisconnect:
         code=serialDisconnect();
         break;
     }
@@ -54,11 +54,12 @@ bool SerialManager::sendMsg(QString msg,bool orNot16)
     }else {
         _msg=msg.toLatin1();
     }
+    //添加换行?
     if(_msg.indexOf('\n')==-1){
         _msg.append('\r');
         _msg.append('\n');
     }
-    qDebug()<<_msg;
+    DebugManager::d(_msg);
     code=port->write(_msg);
     return code != -1?true:false;
 }
@@ -122,11 +123,7 @@ void SerialManager::setports()
     }
 }
 
-void SerialManager::setOrNotBack(bool value)
-{
-    _orNotBack=value;
-    DebugManager::d("返航开关:" +QString::number(_orNotBack));
-}
+
 
 
 void SerialManager::readSerial()
@@ -138,12 +135,13 @@ void SerialManager::readSerial()
         if(i!='\n'){
             elposition++;
         }else {
-
             serialMsg=dataRoom.left(elposition+1);
             DataCheck::checkFormat(serialMsg);
+
             DebugManager::i(serialMsg);
             dataRoom.remove(0,elposition+1);
             elposition=0;
+//            if(DataCheck::checkEffect(serialMsg))
             emit readDone(serialMsg);
         }
     }

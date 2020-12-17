@@ -2,6 +2,7 @@
 import QtQuick.Window 2.12
 import SerialManager 1.0
 import FileManager 1.0
+import CmdManager 1.0
 Window {
     visible: true
     width: 1080
@@ -13,6 +14,10 @@ Window {
     File{
         id:file
     }
+    Cmd{
+        id:cmd
+    }
+
     Component.onCompleted: {
         file.serial=manager
     }
@@ -24,7 +29,7 @@ Window {
             property string title: "欢迎"
             anchors.fill: parent
             color: "#e3e3e3"
-            SplashLayout {
+            SplashLayout{
                 anchors.fill: parent
                 anchors.margins: 10
                 onBtnclick: {
@@ -43,7 +48,7 @@ Window {
         Rectangle {
             property string title: "运行监控"
             anchors.fill: parent
-            color: "#e3e3e3"
+            color:"#e3e3e3"
             MaprunLayout{
                 anchors.fill: parent
                 anchors.margins: 10
