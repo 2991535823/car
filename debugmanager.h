@@ -19,7 +19,7 @@ private:
         WARN,
         ERROR
     };
-    static const int level=NONE;
+    static const int level=VERBOSE;
 };
 
 #endif // DEBUGMANAGER_H

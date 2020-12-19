@@ -20,6 +20,7 @@ Window {
 
     Component.onCompleted: {
         file.serial=manager
+        cmd.mapServer(file)
     }
 
     Tabwindows {

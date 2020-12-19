@@ -39,7 +39,7 @@ public:
     Q_PROPERTY(QString mappath READ getMapPath WRITE setMapPath NOTIFY mapPathUpdata)
     //选中编辑的地图,暴露接口
     QString _editfile;
-    QJsonObject getmap(QString filename);
+    QJsonObject getmap(QString filename,bool orNotToMap=true);
 private:
     bool startCollection();
     bool stopCollection();
@@ -89,6 +89,7 @@ signals:
     void maplistupdata();
     void nodeSizeUpdata();
     void mapPathUpdata();
+    void editFileUpdata();
 public slots:
     void readSerial(const QString msg);
 

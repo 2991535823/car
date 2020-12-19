@@ -12,7 +12,9 @@ FileManager::FileManager(QObject *parent) : QObject(parent)
     DebugManager::v(MapFolder+"是目前的地图文件夹");
     DebugManager::v(createFolder(MapFolder)?"地图文件夹创建":"地图文件夹存在");
     startTimer(500);
+
     setmaplist();
+    seteditfile(_maplist.size()>0?_maplist.first():"no file.json");
     DebugManager::d("file manager create");
 }
 
@@ -81,20 +83,41 @@ void FileManager::createmap(QString filename)
     _filename=filename;
     createFile(filename,Suffix,MapFolder);
 }
-//开放给MapManager的接口
-QJsonObject FileManager::getmap(QString filename)
+//开放给MapManager和Cmd的接口
+QJsonObject FileManager::getmap(QString filename, bool orNotToMap)
 {
+
     if(filename.indexOf(".json")!=-1)
     {
         filename.remove(".json");
     }
     QJsonObject temp=readFile(filename,Suffix,MapFolder);
-    return  temp;
+    if(orNotToMap)
+    {
+        return  temp;
+    }else {
+        QJsonArray pointmsgs= temp["data"].toArray();
+        QJsonArray returnPointMsgs;
+        for(auto i:pointmsgs)
+        {
+            QStringList msgs=i.toString().split(',');
+            returnPointMsgs.append(msgs[9]+','+msgs[10]);
+        }
+        temp.insert("data",returnPointMsgs);
+        return temp;
+    }
+
 }
 //设置编辑的地图
 void FileManager::seteditfile(QString name)
 {
-    _editfile=name;
+
+    if(_editfile!=name)
+    {
+        _editfile=name;
+    }
+    DebugManager::v("_wditfile:"+_editfile);
+    emit editFileUpdata();
 }
 
 
@@ -302,8 +325,10 @@ bool FileManager::setMapPath(QString MapPath)
             temp.insert("mapfolder",MapPath);
             writefile("settings",temp,".ini",iniFolder);
             emit mapPathUpdata();
+            QMessageBox::information(NULL,"提示","修改了地图存放路径，必须重启软件加载设置",QMessageBox::Yes);
         }
     }
+
     return true;//不规范
 }
 //槽函数

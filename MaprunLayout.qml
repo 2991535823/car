@@ -3,7 +3,14 @@ import QtQuick.Controls 2.13
 import MapManager 1.0
 Rectangle{
     id: root
-
+    property int s2e:0X14
+    property int e2s:0X15
+    property int c2e:0X16
+    property int e2c:0X17
+    property int start: 0x1b
+    property int stop: 0x1c
+    property int resume: 0x1d
+    property var mode: ["起点-终点","终点-起点","当前-终点","终点-当前"]
     Row {
         id: row
         width: root.width
@@ -31,7 +38,7 @@ Rectangle{
                     anchors.topMargin: mrload.textsize
                     anchors.top: parent.top
                     Selectbox {
-                        id: selectbox
+                        id: selectboxmap
                         prompttext: "地图选择:"
                         promptmodel: file.maplist
                         width: parent.width
@@ -44,7 +51,8 @@ Rectangle{
                         width: parent.width
                     }
                     Selectbox {
-                        promptmodel: ["起点-终点","终点-起点","当前-终点","终点-当前"]
+                        id: mrbtnmode
+                        promptmodel: mode
                         width: parent.width
                         prompttext: qsTr("模式选择:")
                     }
@@ -81,14 +89,17 @@ Rectangle{
                     anchors.topMargin: mrcontrol.textsize
                     anchors.top: parent.top
                     Button{
+                        id: mrbtnstart
                         width: parent.width
                         text: "开始导航"
                     }
                     Button{
+                        id: mrbtnstop
                         width: parent.width
                         text: "停止导航"
                     }
                     Button{
+                        id: mrbtncontinue
                         width: parent.width
                         text: "恢复导航"
                     }
@@ -173,7 +184,7 @@ Rectangle{
         monitormap.file=file;
     }
     Connections {
-        target: selectbox
+        target: selectboxmap
         onEdited: {
             file.editfile=msg;
         }
@@ -195,7 +206,51 @@ Rectangle{
     Connections {
         target: mrbtnload
         onClicked: {
+            file.editfile=selectboxmap.selectitem
+            console.log(selectboxmap.selectitem)
             cmd.sendtostm32(manager);
+        }
+    }
+
+    Connections {
+        target: mrbtnstart
+        onClicked: {
+            cmd.setCmd(start)
+            cmd.sendtostm32(manager,false)
+        }
+    }
+
+    Connections {
+        target: mrbtnstop
+        onClicked: {
+            cmd.setCmd(stop)
+            cmd.sendtostm32(manager,false)
+        }
+    }
+
+    Connections {
+        target: mrbtncontinue
+        onClicked: {
+            cmd.setCmd(resume)
+            cmd.sendtostm32(manager,false)
+        }
+    }
+
+    Connections {
+        target: mrbtnmode
+        onEdited: {
+            if(msg===mode[0]){
+                cmd.setMode(s2e)
+            }else if(msg===mode[1])
+            {
+                cmd.setMode(e2s)
+            }else if(msg=== mode[2])
+            {
+                cmd.setMode(c2e)
+            }else if(msg===mode[3])
+            {
+                cmd.setMode(e2c)
+            }
         }
     }
 }
