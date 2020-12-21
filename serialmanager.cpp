@@ -14,23 +14,24 @@ SerialManager::~SerialManager()
     DebugManager::d("Serial Manger destory");
 }
 
-bool SerialManager::doCmd(Cmd cmd)
+bool SerialManager::doCmd(int cmd)
 {
+    DebugManager::v("serial cmd:"+QString::number(cmd));
     bool code=false;
     switch (cmd) {
-    case Cmd::CarStart:
+    case CarStart:
         code=carStart();
         break;
-    case Cmd::CarStop:
+    case CarStop:
         code=carStop();
         break;
-    case Cmd::CarResatrt:
+    case CarResatrt:
         code=carRestart();
         break;
-    case Cmd::SerialConnect:
+    case SerialConnect:
         code=serialConnect();
         break;
-    case Cmd::SerialDisconnect:
+    case SerialDisconnect:
         code=serialDisconnect();
         break;
     }

@@ -328,7 +328,6 @@ bool FileManager::setMapPath(QString MapPath)
             QMessageBox::information(NULL,"提示","修改了地图存放路径，必须重启软件加载设置",QMessageBox::Yes);
         }
     }
-
     return true;//不规范
 }
 //槽函数
