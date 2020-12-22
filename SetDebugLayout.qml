@@ -390,12 +390,19 @@ Rectangle{
 
     Connections {
         target: mssend
-        onClicked: {
+        //改进写法
+        function onClicked(){
             if(datasendtext.text!=""){
                 manager.sendMsg(datasendtext.text,format);
             }
             datasendtext.text=""
         }
+//        onClicked: {
+//            if(datasendtext.text!=""){
+//                manager.sendMsg(datasendtext.text,format);
+//            }
+//            datasendtext.text=""
+//        }
     }
     function analysisdata(data){
         var a=data[1].charCodeAt();

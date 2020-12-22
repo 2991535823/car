@@ -5,6 +5,7 @@
 #include <QApplication>
 #include "mapmanager.h"
 #include "cmdmanager.h"
+#include "mapassist.h"
 int main(int argc, char *argv[])
 {
     //test
@@ -13,7 +14,8 @@ int main(int argc, char *argv[])
     QApplication app(argc, argv);
     qmlRegisterType<SerialManager>("SerialManager",1,0,"Serial");
     qmlRegisterType<FileManager>("FileManager",1,0,"File");
-    qmlRegisterType<MapManager> ("MapManager",1,0,"Map");
+//    qmlRegisterType<MapManager> ("MapManager",1,0,"Map");
+    qmlRegisterType<MapAssist>("MapAssist",1,0,"MapAssist");
     qmlRegisterType<CmdManager>("CmdManager",1,0,"Cmd");
     QQmlApplicationEngine engine;
     const QUrl url(QStringLiteral("qrc:/main.qml"));

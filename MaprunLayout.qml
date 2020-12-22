@@ -1,6 +1,9 @@
 ﻿import QtQuick 2.0
 import QtQuick.Controls 2.13
-import MapManager 1.0
+//import MapManager 1.0
+import QtWebEngine 1.8
+import QtWebChannel 1.15
+import MapAssist 1.0
 Rectangle{
     id: root
     property int s2e:0X14
@@ -121,16 +124,18 @@ Rectangle{
                 anchors.topMargin: mrview.textsize
                 anchors.top: parent.top
                 anchors.horizontalCenter: parent.horizontalCenter
-                    Rectangle{
-                        id:monitor
+                Rectangle{
+                    id:monitor
+                    anchors.fill: parent
+                    anchors.margins: 15
+                    WebEngineView{
+                        url: "qrc:/index.html"
+                        id:runmap
                         anchors.fill: parent
-                        anchors.margins: 15
-                        Map{
-                            id:monitormap
-                            anchors.fill: parent
-
-                        }
+                        webChannel: myChannel
                     }
+
+                }
 
 
             }
@@ -168,7 +173,8 @@ Rectangle{
     Connections {
         target: mrbtncar
         onClicked: {
-            monitormap.viewcar=mrbtncar.checked
+            mapassist.carpoint={"x":"106.2459461","y":"29.4899794"};
+            mapassist.mapdata={"x":"106.2459461","y":"29.4899794"};
         }
     }
 
@@ -176,12 +182,12 @@ Rectangle{
         target: mrbtnmap
         onClicked: {
             file.editfile=selectbox.selectitem
-            monitormap.viewmap=mrbtnmap.checked
+//            monitormap.viewmap=mrbtnmap.checked
         }
     }
     Component.onCompleted: {
-        monitormap.serial=manager;
-        monitormap.file=file;
+//        monitormap.serial=manager;
+//        monitormap.file=file;
     }
     Connections {
         target: selectboxmap

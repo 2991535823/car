@@ -40,3 +40,4 @@ void DebugManager::e(QString msg)
         qDebug()<<msg;
     }
 }
+

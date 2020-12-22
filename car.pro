@@ -1,4 +1,4 @@
-QT += quick widgets serialport
+QT += quick widgets serialport webengine
 
 CONFIG += c++11
 
@@ -19,6 +19,7 @@ SOURCES += \
         debugmanager.cpp \
         filemanager.cpp \
         main.cpp \
+        mapassist.cpp \
         mapmanager.cpp \
         serialmanager.cpp
 
@@ -43,5 +44,6 @@ HEADERS += \
     datacheck.h \
     debugmanager.h \
     filemanager.h \
+    mapassist.h \
     mapmanager.h \
     serialmanager.h

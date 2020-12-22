@@ -10,6 +10,7 @@
         <file>Editarea.qml</file>
         <file>SetDebugLayout.qml</file>
         <file>MsgDiag.qml</file>
+        <file>index.html</file>
     </qresource>
     <qresource prefix="/img">
         <file>tab.png</file>

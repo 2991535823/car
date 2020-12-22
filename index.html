@@ -1,0 +1,107 @@
+﻿<!DOCTYPE html>
+<html>
+
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta name="viewport" content="initial-scale=1.0, user-scalable=no" />
+    <style type="text/css">
+        body,
+        html,
+        #allmap {
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            margin: 0;
+            font-family: "微软雅黑";
+        }
+    </style>
+    <script type="text/javascript"
+        src="https://api.map.baidu.com/api?v=3.0&ak=M4zw4ytl9Km0OSof0UeQGDNLyxA4VvM7"></script>
+    <script type="text/javascript" src="E:/code/car/qwebchannel.js"></script>
+    <title>地图展示</title>
+</head>
+
+<body>
+    <div id="allmap"></div>
+</body>
+
+</html>
+<script type="text/javascript">
+    // 百度地图API功能
+    var map = new BMap.Map("allmap");    // 创建Map实例
+    map.centerAndZoom(transPoint(106.2471654, 29.4898980), 15);  // 初始化地图,设置中心点坐标和地图级别
+    //添加地图类型控件
+    map.addControl(new BMap.MapTypeControl({
+        mapTypes: [
+            BMAP_NORMAL_MAP,
+            BMAP_HYBRID_MAP
+        ]
+    }));
+    map.setCurrentCity("重庆");          // 设置地图显示的城市 此项是必须设置的
+    map.enableScrollWheelZoom(true);     //开启鼠标滚轮缩放
+    paintCar = function (data) {
+        if (data.status === 0) {
+            for (var i = 0; i < data.points.length; i++) {
+                map.clearOverlays();
+                map.addOverlay(new BMap.Marker(data.points[i]));
+                // map.panTo(data.points[i]);
+                // map.centerAndZoom(data.points[i], map.getZoom());
+            }
+        }
+    }
+    var paintLine = function (data) {
+        if (data.status === 0) {
+            var polyline = new BMap.Polyline(data.points, {
+                enableEditing: false,    //是否启用线编辑，默认为false
+                enableClicking: false,   //是否响应点击事件，默认为true
+                strokeWeight: '2',       //折线的宽度，以像素为单位
+                strokeOpacity: 0.6,     //折线的透明度，取值范围0 - 1
+                strokeColor: "blue",     //折线颜色
+                strokeStyle: "dashed",   //虚线
+            });
+            map.addOverlay(polyline);
+        }
+    }
+    //传入的x最少两位小数,后面修复
+    function transPoint(x, y) {
+        var X = x.toString().split('.');
+        var Y = y.toString().split('.');
+        var X0 = parseInt(X[0]);
+        var X1 = X[1];
+        X1 = parseInt(X1) / (Math.pow(10, X1.length - 2) * 60);
+        X = X0 + X1;
+        var Y0 = parseInt(Y[0]);
+        var Y1 = Y[1];
+        Y1 = parseInt(Y1) / (Math.pow(10, Y1.length - 2) * 60);
+        Y = Y0 + Y1;
+        return new BMap.Point(X, Y);
+    }
+    function showCar(x, y) {
+        // var marker=new BMap.Point(x,y);
+        var marker = transPoint(x, y);
+        var points = [];
+        points.push(marker);
+        var convertor = new BMap.Convertor();
+        convertor.translate(points, 1, 5, paintCar)
+    }
+    function showmap(points)   // Qt传来的经纬度
+    {
+        var pos = [];
+        for (var i = 0; i < points.length; i++) {
+            pos.push(transPoint(points[i][0], points[i][1]));
+        }
+        var convertor = new BMap.Convertor(); //创建百度经纬度坐标转换
+        convertor.translate(pos, 1, 5, paintLine)
+    }
+    // showCar("106.2459461","29.4899794")
+    new QWebChannel(qt.webChannelTransport, function(channel) {
+	// var myClass = channel.objects.myClass;
+	var myObject = channel.objects.mapAssistObject;
+    myObject.onCarPointChanged.connect(function (arg) {
+        showCar(arg.x,arg.y);
+    })
+    myObject.onMapReload.connect(function(arg){
+        alert(arg.x);
+    })
+});
+</script>

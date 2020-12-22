@@ -1,7 +1,8 @@
 ﻿import QtQuick 2.0
 import QtQuick.Controls 2.13
 import Qt.labs.platform 1.0
-import MapManager 1.0
+//import MapManager 1.0
+import QtWebEngine 1.8
 Rectangle{
     id: root
     property int start: 0 /*file.Start*/
@@ -150,10 +151,16 @@ Rectangle{
                         id:testmap
                         width: parent.width
                         height: parent.height-row1.height
-                        Map{
-                            anchors.fill: testmap
-                            id:editmap
+                        WebEngineView{
+                            url: "qrc:/index.html"
+                            id:runmap
+                            anchors.fill: parent
+                            webChannel: myChannel
                         }
+//                        Map{
+//                            anchors.fill: testmap
+//                            id:editmap
+//                        }
                     }
                 }
             }
@@ -224,14 +231,14 @@ Rectangle{
         }
     }
     Component.onCompleted: {
-        editmap.file=file
+//        editmap.file=file
     }
 
     Connections {
         target: mcviewbtn
         onClicked: {
             file.editfile=mcselect.selectitem
-            editmap.viewmap=mcviewbtn.checked
+//            editmap.viewmap=mcviewbtn.checked
         }
     }
     Connections{
