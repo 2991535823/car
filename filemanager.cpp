@@ -62,7 +62,7 @@ bool FileManager::setParms(QString filename)
     _filename=filename;
     clearMapData();
     QJsonObject jsonObject;
-    QJsonDocument jsonDoc;
+    //    QJsonDocument jsonDoc;
     bool fileExit=_file->exists(MapFolder+_filename+Suffix);
 
     QString filestatus=fileExit?"Edit":"Create";
@@ -91,14 +91,25 @@ QJsonObject FileManager::getmap(QString filename, bool orNotToMap)
     {
         filename.remove(".json");
     }
-    QJsonObject temp=readFile(filename,Suffix,MapFolder);
-    if(orNotToMap)
+    QJsonObject temp=readFile(filename,Suffix,MapFolder);//下面的代码可以优化
+    if(orNotToMap)//发送给地图
     {
-        return  temp;
-    }else {
         QJsonArray pointmsgs= temp["data"].toArray();
         QJsonArray returnPointMsgs;
-        for(auto i:pointmsgs)
+        QJsonObject t;
+        for(auto &&i:pointmsgs)
+        {
+            QStringList info=i.toString().split(',');
+            t["x"]=info[10];
+            t["y"]=info[9];
+            returnPointMsgs.append(t);
+        }
+        temp["data"]=returnPointMsgs;
+        return  temp;
+    }else {//发送给cmd
+        QJsonArray pointmsgs= temp["data"].toArray();
+        QJsonArray returnPointMsgs;
+        for(auto &&i:pointmsgs)
         {
             QStringList msgs=i.toString().split(',');
             returnPointMsgs.append(msgs[9]+','+msgs[10]);
@@ -116,8 +127,13 @@ void FileManager::seteditfile(QString name)
     {
         _editfile=name;
     }
-    DebugManager::v("_wditfile:"+_editfile);
-    emit editFileUpdata();
+    DebugManager::i("_editfile:"+_editfile);
+    emit editfileUpdata(_editfile);
+}
+
+QString FileManager::geteditfile()
+{
+    return _editfile;
 }
 
 
@@ -131,7 +147,7 @@ bool FileManager::startCollection()
             map.append(gpsData);
             return true;
         }else {
-            DebugManager::i("小车位置没有变动,或校验位出错,采集停止");
+            DebugManager::v("小车位置没有变动,或校验位出错,采集停止");
         }
     }else {
         QMessageBox::information(NULL, "提示信息", "地图数据不符合要求,请检查串口！",
@@ -269,6 +285,11 @@ void FileManager::setserial(SerialManager *manager)
         connect(_serial,&SerialManager::readDone,this,&FileManager::readSerial);
     }
     limit++;
+}
+
+SerialManager *FileManager::getSerial()
+{
+    return _serial;
 }
 //设置采集数据的个数
 void FileManager::setNodeSize()

@@ -55,7 +55,7 @@ void CmdManager::setMode(int mode)
 void CmdManager::mapServer(FileManager *manager)
 {
     _mapServer=manager;
-    connect(_mapServer,&FileManager::editFileUpdata,this,&CmdManager::setmapfile);
+    connect(_mapServer,&FileManager::editfileUpdata,this,&CmdManager::setmapfile);
     DebugManager::d("得到地图提供方");
 }
 
@@ -64,9 +64,9 @@ CmdManager::Mode CmdManager::getMode()
     return _mode;
 }
 
-void CmdManager::setmapfile()
+void CmdManager::setmapfile(QString filename)
 {
-    QString file=_mapServer->_editfile;
+    QString file=filename;
     _map.clear();
     if(file==""){
 //        QMessageBox::information(NULL,"提示","没有地图文件，请不要发送",QMessageBox::Yes);

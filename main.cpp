@@ -3,7 +3,7 @@
 #include "serialmanager.h"
 #include "filemanager.h"
 #include <QApplication>
-#include "mapmanager.h"
+//#include "mapmanager.h"
 #include "cmdmanager.h"
 #include "mapassist.h"
 int main(int argc, char *argv[])

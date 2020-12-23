@@ -54,7 +54,7 @@ private:
     int checkBits=0;
     QString waitSendMsg="";
 public slots:
-    void setmapfile();
+    void setmapfile(QString filename);
 
 };
 

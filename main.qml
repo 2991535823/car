@@ -32,6 +32,7 @@ Window {
         file.serial=manager
         cmd.mapServer(file)
         mapassist.serial=manager
+        mapassist.file=file
     }
 
     Tabwindows {

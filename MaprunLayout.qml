@@ -174,7 +174,13 @@ Rectangle{
         target: mrbtncar
         onClicked: {
             mapassist.carpoint={"x":"106.2459461","y":"29.4899794"};
-            mapassist.mapdata={"x":"106.2459461","y":"29.4899794"};
+            mapassist.mapdata=[{"x":"106.2471654","y":"29.4898980"},
+                               {"x":"106.2470473","y":"29.4897025"},
+                               {"x":"106.2470356","y":"29.4898333"},
+                               {"x":"106.2470877","y":"29.4899972"},
+                               {"x":"106.2469209","y":"29.4896956"},
+                               {"x":"106.2466642","y":"29.4896896"},
+                               {"x":"106.2464395","y":"29.4897550"},]
         }
     }
 
@@ -182,12 +188,12 @@ Rectangle{
         target: mrbtnmap
         onClicked: {
             file.editfile=selectbox.selectitem
-//            monitormap.viewmap=mrbtnmap.checked
+            //            monitormap.viewmap=mrbtnmap.checked
         }
     }
     Component.onCompleted: {
-//        monitormap.serial=manager;
-//        monitormap.file=file;
+        //        monitormap.serial=manager;
+        //        monitormap.file=file;
     }
     Connections {
         target: selectboxmap

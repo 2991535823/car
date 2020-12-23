@@ -28,13 +28,13 @@ public:
         Edit
     };
     //qml 接口
-    Q_INVOKABLE bool doCmd(Cmd cmd);
+    Q_INVOKABLE bool doCmd(FileManager::Cmd cmd);
     Q_INVOKABLE bool setParms(QString filename);
     Q_INVOKABLE void createmap(QString filename);
     //qml 属性
     Q_PROPERTY(QStringList maplist READ getmaplist NOTIFY maplistupdata)
-    Q_PROPERTY(QString editfile WRITE seteditfile)
-    Q_PROPERTY(SerialManager *serial WRITE setserial);
+    Q_PROPERTY(QString editfile READ geteditfile WRITE seteditfile NOTIFY editfileUpdata)
+    Q_PROPERTY(SerialManager *serial READ getSerial WRITE setserial NOTIFY onSerialChanged);
     Q_PROPERTY(int nodesize READ getNodeSize NOTIFY nodeSizeUpdata)
     Q_PROPERTY(QString mappath READ getMapPath WRITE setMapPath NOTIFY mapPathUpdata)
     //选中编辑的地图,暴露接口
@@ -55,8 +55,10 @@ private:
     QStringList getmaplist();
     int getNodeSize();
     void seteditfile(QString name);
+    QString geteditfile();
     void setmaplist();
     void setserial(SerialManager *manager);
+    SerialManager* getSerial();
     void setNodeSize();
     bool clearMapData();
     QString getMapPath();
@@ -89,7 +91,8 @@ signals:
     void maplistupdata();
     void nodeSizeUpdata();
     void mapPathUpdata();
-    void editFileUpdata();
+    void editfileUpdata(QString filename);
+    void onSerialChanged(SerialManager *serial);
 public slots:
     void readSerial(const QString msg);
 
