@@ -2,7 +2,8 @@
 #define CMDMANAGER_H
 
 #include <QObject>
-
+#include <QJsonArray>
+#include <QJsonObject>
 class SerialManager;
 class FileManager;
 class CmdManager:public QObject
@@ -10,22 +11,24 @@ class CmdManager:public QObject
     Q_OBJECT
 public:
     CmdManager();
-//    Q_PROPERTY();
+    //    Q_PROPERTY();
 
-    Q_INVOKABLE void sendtostm32(SerialManager *manager,bool dataorcmd=true);
+    Q_INVOKABLE void sendtostm32(bool ornotdata=true);
     Q_INVOKABLE void setCmd(int cmd);
     Q_INVOKABLE void setMode(int mode);
     Q_INVOKABLE void mapServer(FileManager *manager);
-    bool send(SerialManager *manager,QString msg);
+    Q_INVOKABLE void serialServer(SerialManager *manager);
+    bool send(SerialManager*, QString msg);
+    QJsonObject getMinDistancePoint();
     Q_PROPERTY(int orNotBack READ getOrNotBack WRITE setOrNotBack);
-//    Q_PROPERTY(Mode mode READ getMode WRITE setMode);
-//    Q_PROPERTY(Cmd cmd READ getCmd WRITE setCmd);
+    //    Q_PROPERTY(Mode mode READ getMode WRITE setMode);
+    //    Q_PROPERTY(Cmd cmd READ getCmd WRITE setCmd);
 private:
     enum  Mode{
         S2E=0X14,
         E2S=0X15,
         C2E=0X16,
-        E2C=0X17
+        C2S=0X17
     };
     enum  Packet{
         DataHead=0x11,
@@ -39,23 +42,31 @@ private:
         Stop=0x1C,
         Continue=0x1D
     };
-
-    const QChar parms[14]={QChar(DataHead),QChar(BackOn),QChar(BackOff),QChar(S2E),QChar(E2S),QChar(C2E),QChar(E2C),QChar(0X18),QChar(End),QChar(CmdHead),QChar(Start),QChar(Stop),QChar(Continue)};
-    void setOrNotBack(bool value);
-    bool getOrNotBack();
-
-    Mode getMode();
-//    Cmd getCmd();
+    const QString parms[14]={"d,","i,","o,","se,","es,","ne,","ns,","n,","f,","c,","t,","p,","e,"};
     FileManager *_mapServer=nullptr;
     Mode _mode=S2E;
-    int _orNotBack=BackOff;
-    QString _map="15.0,128.4";
+    Packet _orNotBack=BackOn;
+    QString _map="";
     Cmd _cmd=Start;
     int checkBits=0;
     QString waitSendMsg="";
+    int p_mapsize=0;
+    QJsonArray pointArrays;
+    QVector<QJsonObject> p_maplist;
+    SerialManager *p_SerialServer=nullptr;
+    QJsonObject p_currentPoint;
+private:
+    void setOrNotBack(bool value);
+    bool getOrNotBack();
+    Mode getMode();
+    double getDistance(QJsonObject p1,QJsonObject p2);
+    //    Cmd getCmd();
+    QString dealData(Mode mode=S2E,Packet back=BackOn);
+    QString jobjToString(QVector<QJsonObject>);
+
 public slots:
     void setmapfile(QString filename);
-
+    void currenPoint(QString msg);
 };
 
 #endif // CMDMANAGER_H

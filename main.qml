@@ -31,8 +31,10 @@ Window {
     Component.onCompleted: {
         file.serial=manager
         cmd.mapServer(file)
+        cmd.serialServer(manager)
         mapassist.serial=manager
         mapassist.file=file
+
     }
 
     Tabwindows {
@@ -63,6 +65,7 @@ Window {
             anchors.fill: parent
             color:"#e3e3e3"
             MaprunLayout{
+                id: maprunLayout
                 anchors.fill: parent
                 anchors.margins: 10
             }

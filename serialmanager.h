@@ -25,7 +25,8 @@ public:
         SerialConnect=3,
         SerialDisconnect=4
     };
-    friend bool CmdManager::send(SerialManager *manager,QString msg);
+//    friend bool CmdManager::send(SerialManager *manager,QString msg);
+//    friend QJsonObject CmdManager::getMinDistancePoint(SerialManager *manager);
     Q_INVOKABLE bool doCmd(int cmd);
     Q_INVOKABLE void setParms(QString baudrate,QString com);
     Q_INVOKABLE bool sendMsg(QString msg,bool orNot16=false);

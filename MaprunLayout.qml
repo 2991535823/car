@@ -219,7 +219,8 @@ Rectangle{
         target: mrbtnload
         onClicked: {
             file.editfile=selectboxmap.selectitem
-            console.log(selectboxmap.selectitem)
+//            cmd.orNotBack=mrmapbackswitch.selectitem===mrmapbackswitch.promptmodel[0];
+//            console.log(selectboxmap.selectitem)
             cmd.sendtostm32(manager);
         }
     }

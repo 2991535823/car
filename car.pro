@@ -20,7 +20,6 @@ SOURCES += \
         filemanager.cpp \
         main.cpp \
         mapassist.cpp \
-        mapmanager.cpp \
         serialmanager.cpp
 
 RESOURCES += qml.qrc
@@ -45,5 +44,4 @@ HEADERS += \
     debugmanager.h \
     filemanager.h \
     mapassist.h \
-    mapmanager.h \
     serialmanager.h

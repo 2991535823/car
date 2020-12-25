@@ -6,35 +6,53 @@ CmdManager::CmdManager()
 
 }
 
-void CmdManager::sendtostm32(SerialManager *manager,bool dataorcmd)
+void CmdManager::sendtostm32(bool ornotdata)
 {
-    QChar head=dataorcmd?parms[DataHead-0x11]:parms[CmdHead-0x11];
+
+    QString head=ornotdata?parms[DataHead-0x11]:parms[CmdHead-0x11];
     waitSendMsg.append(head);
-    if(dataorcmd)
+    if(ornotdata)
     {
         waitSendMsg.append(parms[_orNotBack-0x11]);
         waitSendMsg.append(parms[_mode-0x11]);
-        if(_map=="")
-        {
-            QMessageBox::information(NULL,"提示","地图数据为空！请检查",QMessageBox::Yes);
-            return;
-        }else {
-          waitSendMsg.append(_map);
-        }
+        DebugManager::v("start debug cmd");
+        waitSendMsg.append(dealData(_mode,_orNotBack));
+
+        waitSendMsg.append(QString::number(p_mapsize));
     }else {
         waitSendMsg.append(parms[_cmd-0x11]);
     }
     waitSendMsg.append('*');
     waitSendMsg+=QString::number(DataCheck::calculate(waitSendMsg),16);
-    send(manager,waitSendMsg);
+    send(p_SerialServer,waitSendMsg);
 }
 
 bool CmdManager::send(SerialManager *manager, QString msg)
 {
-    DebugManager::v("发送消息给STM32");
+//    DebugManager::v("发送消息给STM32");
     manager->sendMsg(msg);
     waitSendMsg.clear();
     return  true;
+}
+
+QJsonObject CmdManager::getMinDistancePoint()
+{
+    QJsonObject minpoint;
+    disconnect(p_SerialServer,&SerialManager::readDone,this,&CmdManager::currenPoint);
+    minpoint["val"]=getDistance(p_currentPoint,p_maplist[0]);
+    minpoint["position"]=0;
+    for(int i=0;i<p_maplist.size()/*p_mapsize也可以*/;i++)
+    {
+        if(minpoint["val"].toDouble()<getDistance(p_currentPoint,p_maplist[i]))
+        {
+            minpoint["position"]=i;
+            minpoint["val"]=getDistance(p_currentPoint,p_maplist[i]);
+        }
+    }
+    minpoint["x"]=p_maplist[minpoint["position"].toInt()]["x"];
+    minpoint["y"]=p_maplist[minpoint["position"].toInt()]["y"];
+    connect(p_SerialServer,&SerialManager::readDone,this,&CmdManager::currenPoint);
+    return minpoint;
 }
 void CmdManager::setOrNotBack(bool value)
 {
@@ -59,26 +77,137 @@ void CmdManager::mapServer(FileManager *manager)
     DebugManager::d("得到地图提供方");
 }
 
+void CmdManager::serialServer(SerialManager *manager)
+{
+    p_SerialServer=manager;
+    connect(p_SerialServer,&SerialManager::readDone,this,&CmdManager::currenPoint);
+}
+
 CmdManager::Mode CmdManager::getMode()
 {
     return _mode;
 }
+
+double CmdManager::getDistance(QJsonObject p1, QJsonObject p2)
+{
+    return  pow(p1["x"].toDouble()-p2["x"].toDouble(),2)+pow(p1["y"].toDouble()-p2["y"].toDouble(),2);
+}
+
+QString CmdManager::dealData(Mode mode, Packet back)
+{
+    QVector<QJsonObject> copy;
+    QString map;
+    map.clear();
+    p_maplist.clear();
+    for(auto &&i:pointArrays)
+    {
+        p_maplist.append(i.toObject());
+    }
+    copy=p_maplist;
+    switch (mode) {
+    case CmdManager::S2E:
+    {
+        map=jobjToString(p_maplist);
+        //不做
+        //        qDebug()<<map;
+        if(back==BackOn)
+        {
+            copy.pop_back();
+            copy.reserve(copy.size());
+            std::reverse(copy.begin(),copy.end());
+            //            qDebug()<<copy;
+            map+=jobjToString(copy);
+            //            qDebug()<<jobjToString(copy);
+            //            qDebug()<<map;
+        }
+    }
+        break;
+    case CmdManager::E2S:
+    {
+        p_maplist.reserve(p_maplist.size());
+        std::reverse(p_maplist.begin(),p_maplist.end());
+        map=jobjToString(p_maplist);
+        if(back==BackOn)
+        {
+            copy.pop_front();
+            map+=jobjToString(copy);
+        }
+    }
+        break;
+    case CmdManager::C2E://当前到终点
+    {
+        QJsonObject t=getMinDistancePoint();
+        p_maplist.remove(0,t["positon"].toInt()-1);//留下后面的数据
+        map=jobjToString(p_maplist);
+        if(back==BackOn)
+        {
+            copy.pop_back();
+            copy.reserve(copy.size());
+            std::reverse(copy.begin(),copy.end());
+            map+=jobjToString(copy);
+        }
+
+    }
+        break;
+    case CmdManager::C2S://当前到起点
+    {
+        QJsonObject t=getMinDistancePoint();
+        //        p_maplist.reserve(p_maplist.size());
+        p_maplist.remove(t["positon"].toInt()-1,p_maplist.size()-t["positon"].toInt());//留下前面的数据
+        p_maplist.reserve(p_maplist.size());
+        std::reverse(p_maplist.begin(),p_maplist.end());
+        map=jobjToString(p_maplist);
+        if(back==BackOn)
+        {
+            copy.pop_front();
+            map+=jobjToString(copy);
+        }
+    }
+        break;
+    default:
+    {
+    }
+        break;
+    }
+    p_mapsize=p_maplist.size()+(back==BackOn?copy.size():0);
+    return map;
+}
+
+QString CmdManager::jobjToString(QVector<QJsonObject> vjobj)
+{
+    QString str;
+    for(auto &&i:vjobj)
+    {
+        str.append(i["x"].toString()+','+i["y"].toString()+',');
+    }
+    return str;
+}
+
 
 void CmdManager::setmapfile(QString filename)
 {
     QString file=filename;
     _map.clear();
     if(file==""){
-//        QMessageBox::information(NULL,"提示","没有地图文件，请不要发送",QMessageBox::Yes);
+        //        QMessageBox::information(NULL,"提示","没有地图文件，请不要发送",QMessageBox::Yes);
     }else {
-        QJsonObject temp=_mapServer->getmap(file,false);
-        QJsonArray pointArrays=temp["data"].toArray();
-        for(auto i:pointArrays)
+        QJsonObject t=_mapServer->getmap(file);
+        pointArrays=t["data"].toArray();
+        p_mapsize=pointArrays.size();
+        for(auto &&i:pointArrays)
         {
-            _map.append(i.toString()+',');
+            _map.append(i.toObject()["x"].toString()+',');
+            _map.append(i.toObject()["y"].toString()+',');
         }
     }
     DebugManager::v("map name:"+file);
+}
+
+void CmdManager::currenPoint(QString msg)
+{
+    QStringList msglist=msg.split(',');
+    p_currentPoint["x"]=msglist[10];
+    p_currentPoint["y"]=msglist[9];
 }
 
 //CmdManager::Cmd CmdManager::getCmd()

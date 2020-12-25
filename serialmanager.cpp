@@ -115,7 +115,7 @@ QStringList SerialManager::getports()
 void SerialManager::setports()
 {
     QStringList list;
-    for (auto info : QSerialPortInfo::availablePorts()) {
+    for (auto &&info : QSerialPortInfo::availablePorts()) {
         list.append(info.portName());
     }
     if(list!=_ports){
