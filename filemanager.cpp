@@ -279,7 +279,6 @@ void FileManager::setserial(SerialManager *manager)
 {
     _serial = manager;
     static int limit=0;
-    //    qDebug()<< "setserial:"<<limit;
     if(limit==0)
     {
         connect(_serial,&SerialManager::readDone,this,&FileManager::readSerial);

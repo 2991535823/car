@@ -61,9 +61,8 @@ void MapAssist::updataMap(QString filename)
         QJsonArray pointArrays=temp["data"].toArray();
         if(pointArrays.size()==0)
         {
-            QMessageBox::information(NULL,"info","map no data!!!",QMessageBox::Yes);
+            QMessageBox::information(NULL,"info","地图里面没有数据!!!",QMessageBox::Yes);
         }else {
-//            DebugManager::i(pointArrays);
             this->setProperty("mapdata",pointArrays);
         }
     }

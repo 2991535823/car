@@ -6,12 +6,15 @@
 //#include "mapmanager.h"
 #include "cmdmanager.h"
 #include "mapassist.h"
+#include <QtWebEngine>
+
 int main(int argc, char *argv[])
 {
     //test
     QApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
-
+    QApplication::setAttribute(Qt::AA_ShareOpenGLContexts);
     QApplication app(argc, argv);
+    QtWebEngine::initialize();
     qmlRegisterType<SerialManager>("SerialManager",1,0,"Serial");
     qmlRegisterType<FileManager>("FileManager",1,0,"File");
 //    qmlRegisterType<MapManager> ("MapManager",1,0,"Map");

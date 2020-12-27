@@ -1,6 +1,8 @@
 ﻿#ifndef CMDMANAGER_H
 #define CMDMANAGER_H
-
+#if _MSC_VER >= 1600
+#pragma execution_character_set("utf-8")
+#endif
 #include <QObject>
 #include <QJsonArray>
 #include <QJsonObject>

@@ -1,6 +1,8 @@
 ﻿#ifndef SERIALMANAGER_H
 #define SERIALMANAGER_H
-
+#if _MSC_VER >= 1600
+#pragma execution_character_set("utf-8")
+#endif
 #include <QObject>
 #include <QSerialPort>
 #include <QSerialPortInfo>
@@ -10,6 +12,8 @@
 #include "debugmanager.h"
 #include "datacheck.h"
 #include "cmdmanager.h"
+#include <QMessageBox>
+
 class SerialManager : public QObject
 {
     Q_OBJECT
@@ -31,7 +35,7 @@ public:
     Q_INVOKABLE void setParms(QString baudrate,QString com);
     Q_INVOKABLE bool sendMsg(QString msg,bool orNot16=false);
     Q_PROPERTY(QStringList ports READ getports NOTIFY portsupdata)
-
+    inline QString getSerialMsg(){return serialMsg;}
 private:
     bool carStart();
     bool carStop();

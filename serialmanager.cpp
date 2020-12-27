@@ -50,6 +50,11 @@ void SerialManager::setParms(QString baudrate, QString com)
 bool SerialManager::sendMsg(QString msg,bool orNot16)
 {
     int code;
+    if(!this->port->isOpen())
+    {
+        QMessageBox::information(nullptr,"info","请连接串口后，再进行操作!",QMessageBox::Yes);
+        return false;
+    }
     if(orNot16){
         _msg=String2Hex(msg);
     }else {
@@ -61,6 +66,7 @@ bool SerialManager::sendMsg(QString msg,bool orNot16)
         _msg.append('\n');
     }
     DebugManager::d(_msg);
+
     code=port->write(_msg);
     return code != -1?true:false;
 }

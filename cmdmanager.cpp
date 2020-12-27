@@ -38,12 +38,12 @@ bool CmdManager::send(SerialManager *manager, QString msg)
 QJsonObject CmdManager::getMinDistancePoint()
 {
     QJsonObject minpoint;
-    disconnect(p_SerialServer,&SerialManager::readDone,this,&CmdManager::currenPoint);
+    currenPoint(p_SerialServer->getSerialMsg());
     minpoint["val"]=getDistance(p_currentPoint,p_maplist[0]);
     minpoint["position"]=0;
-    for(int i=0;i<p_maplist.size()/*p_mapsize也可以*/;i++)
+    for(int i=1;i<p_maplist.size()/*p_mapsize也可以*/;i++)
     {
-        if(minpoint["val"].toDouble()<getDistance(p_currentPoint,p_maplist[i]))
+        if(minpoint["val"].toDouble()>getDistance(p_currentPoint,p_maplist[i]))
         {
             minpoint["position"]=i;
             minpoint["val"]=getDistance(p_currentPoint,p_maplist[i]);
@@ -51,7 +51,6 @@ QJsonObject CmdManager::getMinDistancePoint()
     }
     minpoint["x"]=p_maplist[minpoint["position"].toInt()]["x"];
     minpoint["y"]=p_maplist[minpoint["position"].toInt()]["y"];
-    connect(p_SerialServer,&SerialManager::readDone,this,&CmdManager::currenPoint);
     return minpoint;
 }
 void CmdManager::setOrNotBack(bool value)
@@ -80,7 +79,7 @@ void CmdManager::mapServer(FileManager *manager)
 void CmdManager::serialServer(SerialManager *manager)
 {
     p_SerialServer=manager;
-    connect(p_SerialServer,&SerialManager::readDone,this,&CmdManager::currenPoint);
+//    connect(p_SerialServer,&SerialManager::readDone,this,&CmdManager::currenPoint);
 }
 
 CmdManager::Mode CmdManager::getMode()
@@ -90,7 +89,13 @@ CmdManager::Mode CmdManager::getMode()
 
 double CmdManager::getDistance(QJsonObject p1, QJsonObject p2)
 {
-    return  pow(p1["x"].toDouble()-p2["x"].toDouble(),2)+pow(p1["y"].toDouble()-p2["y"].toDouble(),2);
+    double p1x=p1["x"].toString().toDouble();
+    double p1y=p1["y"].toString().toDouble();
+    double p2x=p2["x"].toString().toDouble();
+    double p2y=p2["y"].toString().toDouble();
+    double disx2=pow((p1x-p2x)*1000000,2);
+    double disy2=pow((p1y-p2y)*1000000,2);
+    return  disx2+disy2;
 }
 
 QString CmdManager::dealData(Mode mode, Packet back)
@@ -108,17 +113,12 @@ QString CmdManager::dealData(Mode mode, Packet back)
     case CmdManager::S2E:
     {
         map=jobjToString(p_maplist);
-        //不做
-        //        qDebug()<<map;
         if(back==BackOn)
         {
             copy.pop_back();
             copy.reserve(copy.size());
             std::reverse(copy.begin(),copy.end());
-            //            qDebug()<<copy;
             map+=jobjToString(copy);
-            //            qDebug()<<jobjToString(copy);
-            //            qDebug()<<map;
         }
     }
         break;
@@ -137,7 +137,16 @@ QString CmdManager::dealData(Mode mode, Packet back)
     case CmdManager::C2E://当前到终点
     {
         QJsonObject t=getMinDistancePoint();
-        p_maplist.remove(0,t["positon"].toInt()-1);//留下后面的数据
+        qDebug()<<t["position"].toInt();
+        if(t["position"].toInt()!=0)
+        {
+            if(t["position"].toInt()==(p_maplist.size()-1))
+            {
+                DebugManager::v("小车在最后一个位置了，注意");
+            }
+            p_maplist.remove(0,t["position"].toInt());//留下后面的数据
+        }
+
         map=jobjToString(p_maplist);
         if(back==BackOn)
         {
@@ -152,8 +161,12 @@ QString CmdManager::dealData(Mode mode, Packet back)
     case CmdManager::C2S://当前到起点
     {
         QJsonObject t=getMinDistancePoint();
-        //        p_maplist.reserve(p_maplist.size());
-        p_maplist.remove(t["positon"].toInt()-1,p_maplist.size()-t["positon"].toInt());//留下前面的数据
+        //三目运算符替代if else
+        (t["position"].toInt()!=(p_maplist.size()-1))?p_maplist.remove(t["position"].toInt()+1,p_maplist.size()-(t["position"].toInt()+1)):DebugManager::e("空语句");
+//        if(t["position"].toInt()!=(p_maplist.size()-1))
+//        {
+//            p_maplist.remove(t["position"].toInt()+1,p_maplist.size()-(t["position"].toInt()+1));//留下前面的数据
+//        }
         p_maplist.reserve(p_maplist.size());
         std::reverse(p_maplist.begin(),p_maplist.end());
         map=jobjToString(p_maplist);
@@ -209,11 +222,6 @@ void CmdManager::currenPoint(QString msg)
     p_currentPoint["x"]=msglist[10];
     p_currentPoint["y"]=msglist[9];
 }
-
-//CmdManager::Cmd CmdManager::getCmd()
-//{
-//    return _cmd;
-//}
 
 void CmdManager::setCmd(int cmd)
 {
