@@ -196,7 +196,6 @@ QJsonObject FileManager::readFile(QString filename, QString suffix, QString fold
     if(_file->exists()){
         if(_file->open(QIODevice::ReadOnly|QIODevice::Text))
         {
-
             tempdoc=QJsonDocument::fromJson(_file->readAll(),&error);
             tempobj=tempdoc.object();
             _file->close();
@@ -348,7 +347,7 @@ bool FileManager::setMapPath(QString MapPath)
             QMessageBox::information(NULL,"提示","修改了地图存放路径，必须重启软件加载设置",QMessageBox::Yes);
         }
     }
-    return true;//不规范
+    return true;//不规范,需要改
 }
 //槽函数
 void FileManager::readSerial(const QString msg)

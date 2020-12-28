@@ -41,7 +41,7 @@ QJsonObject CmdManager::getMinDistancePoint()
     currenPoint(p_SerialServer->getSerialMsg());
     minpoint["val"]=getDistance(p_currentPoint,p_maplist[0]);
     minpoint["position"]=0;
-    for(int i=1;i<p_maplist.size()/*p_mapsize也可以*/;i++)
+    for(int i=1;i<p_maplist.size();i++)
     {
         if(minpoint["val"].toDouble()>getDistance(p_currentPoint,p_maplist[i]))
         {

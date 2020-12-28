@@ -47,7 +47,7 @@ void SerialManager::setParms(QString baudrate, QString com)
     DebugManager::d(_baudrate+"|"+_com);
 }
 
-bool SerialManager::sendMsg(QString msg,bool orNot16)
+bool SerialManager::sendMsg(QString msg,bool orNot16)//加一个参数是否需要换行符
 {
     int code;
     if(!this->port->isOpen())
@@ -160,7 +160,7 @@ void SerialManager::timerEvent(QTimerEvent *event)
     setports();
 }
 //16进制发送
-QByteArray SerialManager::String2Hex(QString &str)
+QByteArray SerialManager::String2Hex(QString &str)//重新调用datacheck.h的静态函数
 {
     QByteArray senddata;
     int hexdata,lowhexdata;

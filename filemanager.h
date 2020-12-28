@@ -65,6 +65,8 @@ private:
     bool clearMapData();
     QString getMapPath();
     bool setMapPath(QString MapPath);
+
+private:
     //地图存放位置及文件格式
     QString MapFolder="C:/Map/";
     QString iniFolder="C:/.map/";
