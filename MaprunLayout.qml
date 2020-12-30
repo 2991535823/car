@@ -1,8 +1,6 @@
 ﻿import QtQuick 2.0
 import QtQuick.Controls 2.13
-//import MapManager 1.0
 import QtWebEngine 1.8
-import QtWebChannel 1.15
 import MapAssist 1.0
 Rectangle{
     id: root
@@ -13,7 +11,7 @@ Rectangle{
     property int start: 0x1b
     property int stop: 0x1c
     property int resume: 0x1d
-    property var mode: ["起点-终点","终点-起点","当前-终点","终点-当前"]
+    property var mode: ["起点-终点","终点-起点","当前-终点","当前-起点"]
     Row {
         id: row
         width: root.width
@@ -22,7 +20,7 @@ Rectangle{
         Item {
             id: column
             width: row.width*0.3
-            height: row.height*0.86
+            height: row.height
 
             Flowrec {
                 id: mrload
@@ -69,25 +67,22 @@ Rectangle{
                     text: "载入地图"
                     anchors.horizontalCenter: parent.horizontalCenter
                     anchors.bottom: parent.bottom
-                    anchors.bottomMargin: 30
+                    anchors.bottomMargin: 20
                 }
-
-
-
             }
 
             Flowrec {
                 id: mrcontrol
                 _text:"运动控制"
                 width: column.width*0.96
-                height: column.height*0.45
+                height: column.height*0.47
                 anchors.horizontalCenter: parent.horizontalCenter
                 anchors.topMargin: mrcontrol.textsize
                 anchors.top: mrload.bottom
                 Column{
                     width: parent.width*0.9
                     height: parent.height*0.8
-                    spacing: 2
+                    spacing: 14
                     anchors.horizontalCenter: parent.horizontalCenter
                     anchors.topMargin: mrcontrol.textsize
                     anchors.top: parent.top
@@ -107,7 +102,6 @@ Rectangle{
                         text: "恢复导航"
                     }
                 }
-
             }
         }
 
@@ -120,7 +114,7 @@ Rectangle{
                 id: mrview
                 _text:"地图显示"
                 width: column1.width*0.95
-                height: column1.height*0.8
+                height: column1.height*0.92+mrview.textsize
                 anchors.topMargin: mrview.textsize
                 anchors.top: parent.top
                 anchors.horizontalCenter: parent.horizontalCenter
@@ -134,77 +128,20 @@ Rectangle{
                         anchors.fill: parent
                         webChannel: myChannel
                     }
-
-                }
-
-
-            }
-
-            Item {
-                id: mrbtnrow
-                width: column1.width
-                height: column1.height*0.12
-                anchors.topMargin: (column1.height-mrview.height-mrview.textsize-mrbtnrow.height)/2
-                anchors.top: mrview.bottom
-
-                Button {
-                    id: mrbtnmap
-                    text: qsTr("显示地图")
-                    checkable: true
-                    font.family: "Tahoma"
-                    anchors.verticalCenter: parent.verticalCenter
-                    anchors.rightMargin: 20
-                    anchors.right: mrbtncar.left
-                }
-
-                Button {
-                    id: mrbtncar
-                    text: qsTr("显示小车")
-                    font.family: "Tahoma"
-                    checkable: true
-                    anchors.rightMargin: 20
-                    anchors.verticalCenter: parent.verticalCenter
-                    anchors.right: parent.right
                 }
             }
         }
-    }
-
-    Connections {
-        target: mrbtncar
-        onClicked: {
-            mapassist.carpoint={"x":"106.2459461","y":"29.4899794"};
-            mapassist.mapdata=[{"x":"106.2471654","y":"29.4898980"},
-                               {"x":"106.2470473","y":"29.4897025"},
-                               {"x":"106.2470356","y":"29.4898333"},
-                               {"x":"106.2470877","y":"29.4899972"},
-                               {"x":"106.2469209","y":"29.4896956"},
-                               {"x":"106.2466642","y":"29.4896896"},
-                               {"x":"106.2464395","y":"29.4897550"},]
-        }
-    }
-
-    Connections {
-        target: mrbtnmap
-        onClicked: {
-            file.editfile=selectbox.selectitem
-            //            monitormap.viewmap=mrbtnmap.checked
-        }
-    }
-    Component.onCompleted: {
-        //        monitormap.serial=manager;
-        //        monitormap.file=file;
     }
     Connections {
         target: selectboxmap
-        onEdited: {
+        function onEdited(msg) {
             file.editfile=msg;
         }
     }
 
     Connections {
         target: mrmapbackswitch
-        onEdited: {
+        function onEdited(msg){
             if(msg===mrmapbackswitch.promptmodel[0])
             {
                 cmd.orNotBack=true;
@@ -217,41 +154,40 @@ Rectangle{
 
     Connections {
         target: mrbtnload
-        onClicked: {
+        function onClicked() {
             file.editfile=selectboxmap.selectitem
-//            cmd.orNotBack=mrmapbackswitch.selectitem===mrmapbackswitch.promptmodel[0];
-//            console.log(selectboxmap.selectitem)
-            cmd.sendtostm32(manager);
+            cmd.sendtostm32();
         }
     }
 
     Connections {
         target: mrbtnstart
-        onClicked: {
+        function onClicked(){
             cmd.setCmd(start)
-            cmd.sendtostm32(manager,false)
+            cmd.sendtostm32(false)
         }
     }
 
     Connections {
         target: mrbtnstop
-        onClicked: {
+        function onClicked() {
             cmd.setCmd(stop)
-            cmd.sendtostm32(manager,false)
+            cmd.sendtostm32(false)
         }
     }
 
     Connections {
         target: mrbtncontinue
-        onClicked: {
+        function onClicked() {
             cmd.setCmd(resume)
-            cmd.sendtostm32(manager,false)
+            cmd.sendtostm32(false)
         }
     }
 
     Connections {
         target: mrbtnmode
-        onEdited: {
+        function onEdited(msg)
+        {
             if(msg===mode[0]){
                 cmd.setMode(s2e)
             }else if(msg===mode[1])
@@ -265,6 +201,7 @@ Rectangle{
                 cmd.setMode(e2c)
             }
         }
+
     }
 }
 

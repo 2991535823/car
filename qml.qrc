@@ -11,10 +11,12 @@
         <file>SetDebugLayout.qml</file>
         <file>MsgDiag.qml</file>
         <file>index.html</file>
+        <file>qwebchannel.js</file>
     </qresource>
     <qresource prefix="/img">
         <file>tab.png</file>
         <file>xndx.jpg</file>
         <file>car.jpg</file>
+        <file>bcar.png</file>
     </qresource>
 </RCC>

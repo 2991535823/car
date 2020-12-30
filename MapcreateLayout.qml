@@ -1,7 +1,6 @@
 ﻿import QtQuick 2.0
 import QtQuick.Controls 2.13
 import Qt.labs.platform 1.0
-//import MapManager 1.0
 import QtWebEngine 1.8
 Rectangle{
     id: root
@@ -97,7 +96,7 @@ Rectangle{
                     y: 245
                     width: column .width
                     text: qsTr("是否保存地图")
-                    anchors.bottomMargin: 50
+                    anchors.bottomMargin: 20
                     anchors.bottom: parent.bottom
                 }
             }
@@ -130,21 +129,13 @@ Rectangle{
                         id: row1
                         width: parent.width
                         height: parent.height*0.15
-                        spacing: width-mcselect.width-mcviewbtn.width
 
                         Selectbox {
                             id: mcselect
-                            width: parent.width*0.6
+                            width: parent.width
                             height: parent.height
                             prompttext:"地图选择:"
                             promptmodel: file.maplist
-                        }
-
-                        Button {
-                            id: mcviewbtn
-                            width: parent.width*0.3
-                            checkable: true
-                            text: qsTr("显示")
                         }
                     }
                     Rectangle{
@@ -157,10 +148,6 @@ Rectangle{
                             anchors.fill: parent
                             webChannel: myChannel
                         }
-//                        Map{
-//                            anchors.fill: testmap
-//                            id:editmap
-//                        }
                     }
                 }
             }
@@ -192,7 +179,6 @@ Rectangle{
                     text: qsTr("保存")
                     KeyNavigation.tab: mcname
                 }
-
             }
         }
 
@@ -202,7 +188,7 @@ Rectangle{
         id:capture
         repeat: true;
         interval: mctime.selectitem*1000
-        onTriggered: {
+        onTriggered:{
             file.doCmd(start)
         }
     }
@@ -216,7 +202,7 @@ Rectangle{
 
     Connections {
         target: mccapon
-        onClicked: {
+        function onClicked(){
             if(mcmode.selectitem==="单点")
             {
                 file.doCmd(start)
@@ -230,20 +216,9 @@ Rectangle{
 
         }
     }
-    Component.onCompleted: {
-//        editmap.file=file
-    }
-
-    Connections {
-        target: mcviewbtn
-        onClicked: {
-            file.editfile=mcselect.selectitem
-//            editmap.viewmap=mcviewbtn.checked
-        }
-    }
     Connections{
         target: mcmode
-        onEdited:{
+        function onEdited(msg){
             if(msg===mcmode.promptmodel[0])
             {
                 mctime.bcheak=false;
@@ -256,7 +231,7 @@ Rectangle{
 
     Connections {
         target: mcname
-        onEdited:{
+        function onEdited(){
             createbox.open("创建了"+mcname.text+".json地图文件,保存文件后方可重新创建！")
             mcname.editable=false
             file.setParms(mcname.text)
@@ -264,14 +239,14 @@ Rectangle{
     }
     Connections {
         target: button2
-        onClicked: {
+        function onClicked() {
             file.editfile=mcselect.selectitem
             file.doCmd(deletemap)
         }
     }
     Connections {
         target: button
-        onClicked: {
+        function onClicked() {
             savebox.options=true
             if(file.maplist.indexOf(mcname.text+".json")===-1)
             {
@@ -285,7 +260,7 @@ Rectangle{
 
     Connections {
         target: savebox
-        onClickmsg:{
+        function onClickmsg(info){
             mcname.editable=true
             mctime.bcheak=true
             capture.stop();
@@ -301,7 +276,7 @@ Rectangle{
 
     Connections {
         target: mccapoff
-        onClicked: {
+        function onClicked(){
             capture.stop()
             createbox.open("数据点采集暂停，可以选择保存数据，或者继续")
         }
@@ -309,7 +284,7 @@ Rectangle{
 
     Connections {
         target: mcselect
-        onEdited: {
+        function onEdited(msg) {
             file.editfile=msg;
         }
     }

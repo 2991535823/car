@@ -341,24 +341,19 @@ Rectangle{
         id: folderDialog
         currentFolder: "file:///"+file.mappath//要求
         options :FolderDialog.ReadOnly
-        onAccepted: {
+        onAccepted:{
             file.mappath=folderDialog.currentFolder
         }
     }
     Connections {
         target: msconnet
-        onClicked: {
-
+        function onClicked(){
             selectbaudrate.enabled=!msconnet.checked;
             selectcom.enabled=!msconnet.checked;
             if(msconnet.checked)
             {
                 manager.setParms(selectbaudrate.selectitem,selectcom.selectitem);
-
                 manager.doCmd(serialConnect);
-//                console.log(serialConnect)
-//                manager.doCmd(manager.SerialConnect)
-
             }else{
                 manager.doCmd(serialDisconnect);
             }
@@ -368,7 +363,7 @@ Rectangle{
 
     Connections {
         target: msdisconnect
-        onClicked: {
+        function onClicked(){
             selectbaudrate.enabled=true;
             selectcom.enabled=true;
             msconnet.checked=false;
@@ -378,7 +373,7 @@ Rectangle{
 
     Connections {
         target: manager
-        onReadDone:{
+        function onReadDone(msg){
             msdatarecivetext.text=msdataon.checked?msg:""
             if(msg.length>100)
             {
@@ -397,12 +392,6 @@ Rectangle{
             }
             datasendtext.text=""
         }
-//        onClicked: {
-//            if(datasendtext.text!=""){
-//                manager.sendMsg(datasendtext.text,format);
-//            }
-//            datasendtext.text=""
-//        }
     }
     function analysisdata(data){
         var a=data[1].charCodeAt();

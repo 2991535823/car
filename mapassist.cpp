@@ -2,10 +2,7 @@
 
 MapAssist::MapAssist(QObject *parent) : QObject(parent)
 {
-    //    "106.2459461","29.4899794"
-    p_carpoint.insert("x","106.123");
-    p_carpoint.insert("y","29.520");
-    //    connect(this,&MapAssist::onCarPointChanged,this,&MapAssist::debug);
+
 }
 
 SerialManager *MapAssist::getSerial()
@@ -30,13 +27,6 @@ void MapAssist::setFile(FileManager *file)
     p_file=file;
     connect(p_file,&FileManager::editfileUpdata,this,&MapAssist::updataMap);
 }
-
-
-//void MapAssist::debug(const QJsonObject &point)
-//{
-//    DebugManager::i(point["x"].toString());
-//}
-
 void MapAssist::updataPoint(const QString msg)
 {
     DebugManager::i(msg);
@@ -63,6 +53,7 @@ void MapAssist::updataMap(QString filename)
         {
             QMessageBox::information(NULL,"info","地图里面没有数据!!!",QMessageBox::Yes);
         }else {
+            qDebug()<<pointArrays;
             this->setProperty("mapdata",pointArrays);
         }
     }

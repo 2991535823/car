@@ -251,8 +251,7 @@ bool FileManager::createFolder(QString folder)
 {
     bool code=false;
     if(!dir.exists(folder)){
-        dir.mkdir(folder);
-        code=true;
+        code=dir.mkdir(folder);
     }
     return code;
 }
@@ -314,7 +313,7 @@ QString FileManager::getMapPath()
 {
     if(createFile("settings",".ini",iniFolder))
     {
-        DebugManager::d("配置文件夹不存在,开始进行设置......");
+        DebugManager::d("配置文件不存在,开始进行设置......");
         setMapPath(MapFolder);
         return MapFolder;
     }else {
