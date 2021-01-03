@@ -5,6 +5,7 @@ import FileManager 1.0
 import CmdManager 1.0
 import MapAssist 1.0
 import QtWebChannel 1.0
+import QtWebEngine 1.8
 Window {
     visible: true
     width: 1080

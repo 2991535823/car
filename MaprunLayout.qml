@@ -123,7 +123,7 @@ Rectangle{
                     anchors.fill: parent
                     anchors.margins: 15
                     WebEngineView{
-                        url: "qrc:/index.html"
+                        url: "http://139.196.210.11"
                         id:runmap
                         anchors.fill: parent
                         webChannel: myChannel
