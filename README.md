@@ -1,5 +1,5 @@
 # 使用说明书
-下载地址:[click me](https://pan.xunlei.com/s/VMQ7y-_du-nx-dJmt01YgL8kA1zxg6)
+下载地址:[click me](https://pan.xunlei.com/s/VMQ7y-_du-nx-dJmt01YgL8kA1)
 
 提取码:zxg6
 
