@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta name="viewport" content="initial-scale=1.0, user-scalable=no" />
+    <meta http-equiv="pragma" content="no-cache"> 
+    <meta http-equiv="Cache-Control" content="no-cache, must-revalidate"> 
+    <meta http-equiv="expires" content="Wed, 26 Feb 1997 08:21:57 GMT">
+    <style type="text/css">
+        body,
+        html,
+        #allmap {
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            margin: 0;
+            font-family: "微软雅黑";
+        }
+    </style>
+    <script type="text/javascript" src="https://api.map.baidu.com/api?v=3.0&ak=M4zw4ytl9Km0OSof0UeQGDNLyxA4VvM7"></script>
+    <script type="text/javascript" src="qwebchannel.js"></script>
+    <title>地图展示</title>
+</head>
+
+<body>
+    <div id="allmap"></div>
+</body>
+
+</html>
+<script type="text/javascript">
+    // 百度地图API功能
+    var map = new BMap.Map("allmap", { enableMapClick: false });    // 创建Map实例
+    map.centerAndZoom(transPoint(106.2471654, 29.4898980), 15);  // 初始化地图,设置中心点坐标和地图级别
+    //添加地图类型控件
+    map.addControl(new BMap.MapTypeControl({
+        mapTypes: [
+            BMAP_NORMAL_MAP,
+            BMAP_HYBRID_MAP
+        ]
+    }));
+    map.setCurrentCity("重庆");          // 设置地图显示的城市 此项是必须设置的
+    map.enableScrollWheelZoom(true);     //开启鼠标滚轮缩放
+    var marker;
+    var polyline;
+    var carrotation;
+    var mapdatas;
+    var mapcatch=[];
+    var editflag=false;
+    var myIcon = new BMap.Icon("bcar.png", new BMap.Size(52, 26));
+    var paintCar = function (data) {
+        if (data.status === 0) {
+            for (var i = 0; i < data.points.length; i++) {
+                // map.clearOverlays();
+                if (marker != undefined) {
+                    marker.setPosition(data.points[0]);
+                    marker.setRotation(carrotation);
+                } else {
+                    marker = new BMap.Marker(data.points[0], {
+                        icon: myIcon,
+                        enableMassClear: false
+                    });
+                    marker.setRotation(carrotation);
+
+                    map.addOverlay(marker);
+                }
+
+
+                // map.centerAndZoom(data.points[i], 20);
+            }
+        }
+    }
+    var paintLine = function (data) {
+        if (data.status === 0) {
+            //    if (polyline != undefined) {
+            //         map.removeOverlay(polyline);
+            //     }
+            polyline = new BMap.Polyline(data.points, {
+                enableEditing: false,    //是否启用线编辑，默认为false
+                enableClicking: false,   //是否响应点击事件，默认为true
+                strokeWeight: '2',       //折线的宽度，以像素为单位
+                strokeOpacity: 0.6,     //折线的透明度，取值范围0 - 1
+                strokeColor: "blue",     //折线颜色
+                strokeStyle: "dashed",   //虚线
+            });
+            mapcatch.push(polyline);
+            map.addOverlay(polyline);
+            
+            
+        }
+    }
+    //传入的x最少两位小数,后面修复
+    function transPoint(x, y) {
+        var X = x.toString().split('.');
+        var Y = y.toString().split('.');
+        var X0 = parseInt(X[0]);
+        var X1 = X[1];
+        X1 = parseInt(X1) / (Math.pow(10, X1.length - 2) * 60);
+        X = X0 + X1;
+        var Y0 = parseInt(Y[0]);
+        var Y1 = Y[1];
+        Y1 = parseInt(Y1) / (Math.pow(10, Y1.length - 2) * 60);
+        Y = Y0 + Y1;
+        return new BMap.Point(X, Y);
+    }
+    function showCar(x, y, r) {
+        // var marker=new BMap.Point(x,y);
+        var markerp = transPoint(x, y);
+        var points = [];
+        points.push(markerp);
+        var convertor = new BMap.Convertor();
+        convertor.translate(points, 1, 5, paintCar);
+        carrotation = r;
+    }
+function showmap(points)   // Qt传来的经纬度
+    {
+        var pos = [];
+        var groupCount = 0; //每次转十条
+        var total = 0;
+        var convertor = new BMap.Convertor(); //创建百度经纬度坐标转换
+        if (points.length % 10 > 0) {
+            groupCount = (points.length / 10) + 1;
+        }
+        else {
+            groupCount = (points.length / 10);
+        }
+        for (var i = 0; i < groupCount; i++) {
+            if(i!=0)
+            {
+                var point = transPoint(points[total-1].x, points[total-1].y);
+                // alert(total+"/"+points.length);
+                pos.push(point);
+                for (var j = 0; j < 9; j++) {
+                if (total < points.length) { //不超过总记录数结束
+                    var point = transPoint(points[(i * 10) + j].x, points[(i * 10) + j].y);
+                    // alert(((i * 10) + j)+"/"+points.length);
+                    pos.push(point);
+                }
+                total++;
+            }
+            }else{
+                for (var j = 0; j < 10; j++) {
+                if (total < points.length) { //不超过总记录数结束
+                    var point = transPoint(points[(i * 10) + j].x, points[(i * 10) + j].y);
+                    // alert(((i * 10) + j)+"/"+points.length);
+                    pos.push(point);
+                }
+                total++;
+            }
+                
+            }
+            convertor.translate(pos, 1, 5, paintLine);
+            pos=[];
+        }
+    }
+    function editmap()
+    {
+        editflag=!editflag;
+        map.clearOverlays();
+        showmap(mapdatas)
+    }
+    new QWebChannel(qt.webChannelTransport, function (channel) {
+        var myObject = channel.objects.mapAssistObject;
+        myObject.onCarPointChanged.connect(function (arg) {
+            showCar(arg.x, arg.y, arg.r - 90);
+        })
+        myObject.onMapReload.connect(function (arg) {
+            map.clearOverlays();
+            mapcatch=[];
+            showmap(arg);
+            
+        })
+        myObject.onEdit.connect(function (arg)
+        {
+            // alert(arg);
+            if(mapcatch.length>0)
+            {
+                for(var i=0;i<mapcatch.length;i++)
+                {
+                    mapcatch[i].enableEditing();   
+                }
+            }else
+            {
+                alert('没有地图数据');
+            }
+            // editmap();
+            
+        })
+        myObject.onEdited.connect(function ()
+        {
+            if(mapcatch.length>0)
+            {
+                for(var i=0;i<mapcatch.length;i++)
+                {
+                    mapcatch[i].disableEditing();
+                    myObject.htmlBack(mapcatch[i].getPath());  
+                }
+                
+            }
+        })
+    });
+</script>
